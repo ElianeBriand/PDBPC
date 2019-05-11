@@ -27,6 +27,10 @@ namespace pdbpc {
 
         int numberOfParsedLines;
 
+        bool hasErrors;
+        bool hasWarnings;
+        bool hasPedanticProblems;
+
     };
 }
 

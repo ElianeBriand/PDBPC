@@ -6,6 +6,7 @@
 #define PDBPC_INTERNALUTILS_H
 
 #include <boost/filesystem.hpp>
+#include <pdbpc/ParsedPDB.h>
 
 namespace bfs = boost::filesystem;
 
@@ -15,7 +16,10 @@ namespace pdbpc {
 
     void checkPDBPath(bfs::path pdbPath);
 
-}
+    void checkForErrorsWarningsProblems(ParsedPDB& ppdb);
+
+
+    }
 
 
 #endif //PDBPC_INTERNALUTILS_H

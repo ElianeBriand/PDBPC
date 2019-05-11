@@ -33,4 +33,18 @@ namespace pdbpc {
 
     }
 
+    void checkForErrorsWarningsProblems(ParsedPDB& ppdb) {
+        ppdb.hasErrors = false;
+        ppdb.hasWarnings = false;
+        ppdb.hasPedanticProblems = false;
+        for(const auto& record: ppdb.outOfBandRecords) {
+            if(record->severity == OutOfBandSeverity::error)
+                ppdb.hasErrors = true;
+            if(record->severity == OutOfBandSeverity::warning)
+                ppdb.hasWarnings = true;
+            if(record->severity == OutOfBandSeverity::idiosyncrasy)
+                ppdb.hasPedanticProblems = true;
+        }
+    }
+
 }

@@ -42,6 +42,8 @@ namespace pdbpc {
         if(settings.doPedanticVerifications)
             doPedanticVerifications(ppdb);
 
+        checkForErrorsWarningsProblems(ppdb);
+
         return ppdb;
     }
 
