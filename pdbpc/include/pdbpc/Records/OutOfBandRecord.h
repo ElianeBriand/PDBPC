@@ -19,7 +19,8 @@ namespace pdbpc {
     enum class OutOfBandType  {
         UnhandledPDBLine,
         IncorrectPDBLineFormat,
-        IncorrectPDBFileStructure
+        IncorrectPDBFileStructure,
+        SurprisingStructure // Does not imply incorrect, but should probably be checked
     };
 
     enum class OutOfBandSubType  {
@@ -34,7 +35,24 @@ namespace pdbpc {
         zeroModelNumber,
         newModelLineWhilePreviousNotClosed,
         duplicateModelNumber,
-        EndMdlWithoutOpeningModelStatement
+        EndMdlWithoutOpeningModelStatement,
+
+        // Atom related errors
+        AtomDegradedModeParsingEvent,
+        AtomIncompleteLine,
+        AtomCannotParseSerialNumber,
+        AtomUnknownResidueThreeLetterCode,
+        AtomNameNotKnownInSpecifiedResidue,
+        AtomChainIDIsNotAlphanumerical,
+        AtomCannotParseResidueSeqId,
+        AtomResidueInsertionCodeIsNotALetter,
+        AtomCannotParseCoordinates,
+        AtomCannotParseTempFactor,
+        AtomCannotParseCharge,
+        AtomNoElementName,
+        AtomElementNameContainsNonLetter,
+        AtomAltLocIdContainsNonLetter,
+        AtomMissingChainID
 
     };
 

@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <memory>
+#include <pdbpc/Records/Atom.h>
 
 #include "ParserSettings.h"
 #include "pdbpc/Records/Model.h"
@@ -21,6 +22,7 @@ namespace pdbpc {
 
         std::vector<std::shared_ptr<Model>> models;
 
+        std::vector<std::shared_ptr<Atom>> atoms_flatlist;
 
         std::vector<std::shared_ptr<OutOfBandRecord>> outOfBandRecords;
 

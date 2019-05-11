@@ -26,6 +26,8 @@ namespace pdbpc {
 
         ppdb.settings = settings;
 
+        createPlaceholderModelAndChain(ppdb);
+
         bfs::ifstream fileStream(pdbPath);
         std::string line;
         int lineNumber = 1;

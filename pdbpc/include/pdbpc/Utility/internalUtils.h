@@ -18,6 +18,9 @@ namespace pdbpc {
 
     void checkForErrorsWarningsProblems(ParsedPDB& ppdb);
 
+    void createPlaceholderModelAndChain(ParsedPDB& ppdb);
+
+    int findNextFreeModelNumber(ParsedPDB& ppdb);
 
     }
 

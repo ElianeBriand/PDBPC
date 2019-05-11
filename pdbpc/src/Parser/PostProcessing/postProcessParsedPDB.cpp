@@ -14,10 +14,8 @@ namespace pdbpc {
         // TODO: Handle duplicate models
 
         // Handle no model record
-        //  --> We create a default model where all records will go
-
-        if(ppdb.models.empty())
-            modelPostProcessing_handleNoModel(ppdb);
+        //  --> We legitimize the default model (model num -1) to be our only model
+         modelPostProcessing_handleNoModel(ppdb);
 
 
 

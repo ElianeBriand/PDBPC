@@ -3,18 +3,27 @@
 //
 
 #include <pdbpc/Parser/PostProcessing/modelPostProcessing.h>
+#include <pdbpc/Utility/internalUtils.h>
 
 
 namespace pdbpc {
 
     void modelPostProcessing_handleNoModel(ParsedPDB& ppdb) {
-        auto defaultModel = std::make_shared<Model>();
-        defaultModel->modelNumber = 1;
-        defaultModel->openingLineNumber = 0;
-        defaultModel->openingLine = "<Beginning of file>";
-        defaultModel->closingLineNumber = ppdb.numberOfParsedLines+1;
-        defaultModel->closingLine = "<End of file>";
-        ppdb.models.push_back(defaultModel);
+
+        if(ppdb.models.size() > 1) {
+            // We have explicit models
+            if(ppdb.models.at(0)->atoms_flatlist.size() == 0) {
+                // No atoms in the default model : we can just remove it
+                ppdb.models.erase(ppdb.models.begin());
+            }else {
+                // We find a free model num to legitimize the default model
+                int newDefaultModelmodelNum = findNextFreeModelNumber(ppdb);
+                ppdb.models.at(0)->modelNumber = newDefaultModelmodelNum;
+            }
+        }else {
+            // We only have the implicit default model
+            ppdb.models.at(0)->modelNumber = 1;
+        }
     }
 
 }

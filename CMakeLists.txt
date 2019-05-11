@@ -5,6 +5,13 @@ include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 14)
 
+SET(CMAKE_CXX_FLAGS "-Wall")
+SET(CMAKE_CXX_COMPILER "/usr/bin/g++")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g ")
+SET(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG")
+SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -march=native -g  ")
+
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost REQUIRED COMPONENTS log filesystem unit_test_framework)
@@ -26,7 +33,7 @@ set(PDBPC_SOURCE_LIST
         pdbpc/src/Parser/PostProcessing/pedanticVerifications.cpp
         pdbpc/src/Parser/PostProcessing/modelPostProcessing.cpp
 
-        )
+        pdbpc/src/Parser/parseAtomLine.cpp pdbpc/include/pdbpc/Parser/parseAtomLine.h pdbpc/src/Records/Atom.cpp pdbpc/include/pdbpc/Records/Atom.h pdbpc/src/Records/Residue.cpp pdbpc/include/pdbpc/Records/Residue.h)
 
 
 

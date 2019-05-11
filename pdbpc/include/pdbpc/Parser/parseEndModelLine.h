@@ -9,7 +9,7 @@
 
 namespace pdbpc {
 
-    bool parseEndModelLine(ParsedPDB& ppdb, const std::string& endModelLine, int lineNumber);
+    void parseEndModelLine(ParsedPDB& ppdb, const std::string& endModelLine, int lineNumber);
 
 }
 

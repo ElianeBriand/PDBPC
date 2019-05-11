@@ -9,13 +9,14 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/log/trivial.hpp>
+#include <pdbpc/Parser/parseAtomLine.h>
 
 
 namespace b = boost;
 
 namespace pdbpc {
 
-    bool readPDBLine(ParsedPDB& ppdb, const std::string& line, int lineNumber) {
+    void readPDBLine(ParsedPDB& ppdb, const std::string& line, int lineNumber) {
 
         if(b::starts_with(line, "MODEL ")) {
 
@@ -25,9 +26,11 @@ namespace pdbpc {
 
             parseEndModelLine(ppdb,line,lineNumber);
 
-        }else if (b::starts_with(line, "ATOM")) {
+        }else if (b::starts_with(line, "ATOM  ")) {
 
-        }else if (b::starts_with(line, "HETATM")) {
+            parseAtomLine(ppdb,line,lineNumber);
+
+        }else if (b::starts_with(line, "HETATM ")) {
 
         }else {
             // Line type unsupported ?
@@ -41,8 +44,6 @@ namespace pdbpc {
             ppdb.outOfBandRecords.push_back(rec);
         }
 
-
-        return true;
 
     }
 

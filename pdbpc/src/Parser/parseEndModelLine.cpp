@@ -12,7 +12,7 @@ namespace b = boost;
 
 namespace pdbpc {
 
-    bool parseEndModelLine(ParsedPDB& ppdb, const std::string& originalEndModelLine, int lineNumber) {
+    void parseEndModelLine(ParsedPDB& ppdb, const std::string& originalEndModelLine, int lineNumber) {
 
         // Standard conforming ENDMDL lines must have 6 columns, composing the keyword ENDMDL
 
@@ -48,7 +48,7 @@ namespace pdbpc {
             rec->lineNumber = lineNumber;
             rec->recoveryStatus = RecoveryStatus::recovered;
             ppdb.outOfBandRecords.push_back(rec);
-            return true;
+            return;
         }
 
         std::shared_ptr<Model> lastModel = ppdb.models.back();
@@ -63,13 +63,13 @@ namespace pdbpc {
             rec->lineNumber = lineNumber;
             rec->recoveryStatus = RecoveryStatus::recovered;
             ppdb.outOfBandRecords.push_back(rec);
-            return true;
+            return;
         }
 
         lastModel->closingLine = originalEndModelLine;
         lastModel->closingLineNumber = lineNumber;
 
-        return true;
+        return;
     }
 
 }

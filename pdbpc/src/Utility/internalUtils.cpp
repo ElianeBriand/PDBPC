@@ -37,14 +37,40 @@ namespace pdbpc {
         ppdb.hasErrors = false;
         ppdb.hasWarnings = false;
         ppdb.hasPedanticProblems = false;
-        for(const auto& record: ppdb.outOfBandRecords) {
-            if(record->severity == OutOfBandSeverity::error)
+        for (const auto& record: ppdb.outOfBandRecords) {
+            if (record->severity == OutOfBandSeverity::error)
                 ppdb.hasErrors = true;
-            if(record->severity == OutOfBandSeverity::warning)
+            if (record->severity == OutOfBandSeverity::warning)
                 ppdb.hasWarnings = true;
-            if(record->severity == OutOfBandSeverity::idiosyncrasy)
+            if (record->severity == OutOfBandSeverity::idiosyncrasy)
                 ppdb.hasPedanticProblems = true;
         }
     }
+
+    void createPlaceholderModelAndChain(ParsedPDB& ppdb) {
+        auto defaultModel = std::make_shared<Model>();
+        defaultModel->modelNumber = -1;
+        defaultModel->openingLineNumber = 0;
+        defaultModel->openingLine = "<Beginning of file>";
+        defaultModel->closingLineNumber = ppdb.numberOfParsedLines + 1;
+        defaultModel->closingLine = "<End of file>";
+        ppdb.models.push_back(defaultModel);
+    }
+
+    int findNextFreeModelNumber(ParsedPDB& ppdb) {
+        int modelNum = 1;
+
+        while (true) {
+            auto find_it = std::find_if(ppdb.models.begin(),
+                                        ppdb.models.end(),
+                                        [modelNum](const std::shared_ptr<Model>& m_sptr) {
+                                            return m_sptr->modelNumber == modelNum;
+                                        });
+            if (find_it == ppdb.models.end()) // modelNum is not already in use
+                return modelNum;
+            modelNum++;
+        }
+    }
+
 
 }

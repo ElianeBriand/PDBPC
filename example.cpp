@@ -17,4 +17,8 @@ int main() {
     for(const auto& record: ppdb.models) {
         record->printModelRecord();
     }
+
+    for(const auto& record: ppdb.atoms_flatlist) {
+        record->printAtomRecord();
+    }
 }

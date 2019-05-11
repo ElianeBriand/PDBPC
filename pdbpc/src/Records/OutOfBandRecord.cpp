@@ -43,7 +43,8 @@ namespace pdbpc {
     static std::map<OutOfBandType,std::string> TypeToString =
             {{OutOfBandType::UnhandledPDBLine,"Unhandled PDB line"},
              {OutOfBandType::IncorrectPDBLineFormat,"Incorrect PDB line Format"},
-             {OutOfBandType::IncorrectPDBFileStructure,"Incorrect PDB file structure"}
+             {OutOfBandType::IncorrectPDBFileStructure,"Incorrect PDB file structure"},
+             {OutOfBandType::SurprisingStructure, "Line specifies structure which, while possible, is surprising"}
             };
 
     static std::map<OutOfBandSubType,std::string> SubTypeToString =
@@ -56,7 +57,22 @@ namespace pdbpc {
              {OutOfBandSubType::zeroModelNumber,"Number model is zero"},
              {OutOfBandSubType::newModelLineWhilePreviousNotClosed,"new MODEL line encountered while previous model not closed"},
              {OutOfBandSubType::duplicateModelNumber,"Duplicate model number"},
-             {OutOfBandSubType::EndMdlWithoutOpeningModelStatement,"ENDMDL line without previous MODEl line"}
+             {OutOfBandSubType::EndMdlWithoutOpeningModelStatement,"ENDMDL line without previous MODEl line"},
+             {OutOfBandSubType::AtomDegradedModeParsingEvent, "ATOM degraded mode parsing triggered"},
+             {OutOfBandSubType::AtomIncompleteLine,"ATOM line too incomplete for even degraded mode parsing"},
+             {OutOfBandSubType::AtomCannotParseSerialNumber, "ATOM Serial number could not be parsed"},
+             {OutOfBandSubType::AtomUnknownResidueThreeLetterCode, "Residue three letter code is unknown"},
+             {OutOfBandSubType::AtomNameNotKnownInSpecifiedResidue, "ATOM atom name not usually found in specified residue"},
+             {OutOfBandSubType::AtomChainIDIsNotAlphanumerical, "ATOM chain identifier should be alphanumerical"},
+             {OutOfBandSubType::AtomCannotParseResidueSeqId, "ATOM has unparseable residue sequence identifier"},
+             {OutOfBandSubType::AtomResidueInsertionCodeIsNotALetter, "ATOM residue insertion code is not a letter"},
+             {OutOfBandSubType::AtomCannotParseCoordinates, "ATOM coordinate could not be parsed"},
+             {OutOfBandSubType::AtomCannotParseTempFactor, "Present but unparseable ATOM temperature factor"},
+             {OutOfBandSubType::AtomCannotParseCharge, "Present but unparseable ATOM charge"},
+             {OutOfBandSubType::AtomNoElementName, "ATOM element name is missing"},
+             {OutOfBandSubType::AtomElementNameContainsNonLetter, "ATOM element name contains non-alphabetic characters"},
+             {OutOfBandSubType::AtomAltLocIdContainsNonLetter,"ATOM alternate location identifier contains non-alphabetic characters"},
+             {OutOfBandSubType::AtomMissingChainID, "ATOM has missing chain identifier"}
             };
     static std::map<RecoveryStatus,std::string> RecoveryStatusToString =
             {{RecoveryStatus::recovered,"Recovered"},

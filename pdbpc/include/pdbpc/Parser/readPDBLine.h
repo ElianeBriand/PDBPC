@@ -9,7 +9,7 @@
 
 namespace pdbpc {
 
-    bool readPDBLine(ParsedPDB& ppdb, const std::string& line, int lineNumber);
+    void readPDBLine(ParsedPDB& ppdb, const std::string& line, int lineNumber);
 
 }
 

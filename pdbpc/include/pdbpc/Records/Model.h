@@ -6,6 +6,10 @@
 #define PDBPC_MODEL_H
 
 #include <string>
+#include <vector>
+#include <memory>
+
+#include <pdbpc/Records/Atom.h>
 
 namespace pdbpc {
     struct Model {
@@ -17,6 +21,9 @@ namespace pdbpc {
 
         std::string closingLine;
         int closingLineNumber = -1;
+
+
+        std::vector<std::shared_ptr<Atom>> atoms_flatlist;
 
 
         void printModelRecord();
