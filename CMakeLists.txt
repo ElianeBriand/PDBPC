@@ -78,7 +78,9 @@ target_include_directories(PDBPC_example PRIVATE ./pdbpc/include/)
 enable_testing()
 
 add_executable(PDBPC_unittest
-        pdbpc/test/MainTestSuite.cpp)
+        pdbpc/test/Main_TestSuite.cpp
+        pdbpc/test/InternalUtils_TestSuite.cpp
+        pdbpc/test/Line-ATOM_TestSuite.cpp pdbpc/test/Line-MODEL_TestSuite.cpp pdbpc/test/line-ENDMDL_TestSuite.cpp)
 
 target_link_libraries(PDBPC_unittest pdbpc_shared)
 target_link_libraries(PDBPC_unittest ${Boost_LIBRARIES})

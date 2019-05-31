@@ -1,5 +1,7 @@
-PDB Parsing & Conformity in C++ is a complete and easy to use PDB file parser, that reports and try to correct errors
-.
+PDB Parsing & Conformity in C++ is a complete and easy to use PDB file parser,
+ that reports and tries to correct file format errors.
+ 
+
 
 
 # Basic usage
@@ -9,18 +11,40 @@ pdbpc::ParsedPDB ppdb = pdbpc::readPDBFile("../ExamplePDB/1HXW.pdb");
 
 // While PDBPC can parse through non-conforming/incorrect PDB file format,
 // (which can be useful when you can't modify the emitting software)
-// It is nonetheless recommended in the general case to check for parsing errors
+// It is nonetheless recommended to check for parsing errors
 
 if(ppdb.hasErrors) {
     std::cout << "PDB file cannot be read" << std::endl;
-    return -2
+    return -2;
 }
 
 
-// Access the parsed PDB
-for(const auto& record: ppdb.models) {
-    record->modelNumber;
-    // record->printModelRecord(); // Print a summary
+// Access the parsed PDB :
+
+// As a flat atom list
+for(const auto& atom : ppdb.atoms_flatlist) {
+    std::cout << "Atom " << atom->atomName << " !" << std::endl;
+    
+    // record->printAtomRecord(); // Print a summary
+}
+
+// As a hierarchy
+for(const auto& model: ppdb.models) {
+    for(const auto& chain : model) {
+        for(const auto& res: chain) {
+            for(const auto& atom: res) {
+                std::cout << "Atom " << atom->atomName << " !" << std::endl;
+            }
+        }
+    }
+}
+
+// As a mix : flat list from any hierarchical level
+for(const auto& model: ppdb.models) {
+    for(const auto& chain : model) {
+        auto atom = chain.atoms_flatlist.at(23);
+        std::cout << "Atom #23 is " << atom->atomName << " !" << std::endl;
+    }
 }
 
 ```
@@ -53,4 +77,23 @@ if(ppdb.hasPedanticProblems) {
    // Can be used as a test suite if you have a program emitting PDB file.
 }
 
+// Print all errors/warning/pedant remarks generated when parsing, with line, line number,
+// and offences.
+for(const auto& record: ppdb.outOfBandRecords) {
+    record->printRecord();
+}
+
 ```
+
+# Tips
+*  The `ParsedPDB` structure contains mostly array of `std::shared_ptr`, you do not have to fear copies too much.
+
+# Bugs and improvements
+
+If you find a standard-conforming PDB file that fails to parse, please report it as a bug. Same if
+you have a non-compliant file that generate no warnings.
+
+
+If you find an emitting software with a non-compliant quirk in its PDBs, file a feature 
+request, we are interested in making the parser as robust as possible, even to not-quite-correct
+formatting.
