@@ -12,7 +12,9 @@ SET(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG")
 SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -march=native -g  ")
 
-set(Boost_USE_STATIC_LIBS        ON)
+#set(Boost_USE_STATIC_LIBS        ON)
+set(Boost_USE_STATIC_LIBS        OFF)
+
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost REQUIRED COMPONENTS filesystem unit_test_framework)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -74,7 +76,7 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 
 add_executable(PDBPC_example example.cpp)
-set_target_properties(PDBPC_example PROPERTIES LINK_FLAGS " -Wl,--no-undefined -Wl,--as-needed  -static   ")
+set_target_properties(PDBPC_example PROPERTIES LINK_FLAGS " -Wl,--no-undefined -Wl,--as-needed  ")
 target_link_libraries(PDBPC_example pdbpc_static)
 target_link_libraries(PDBPC_example ${Boost_LIBRARIES})
 target_link_libraries(PDBPC_example pthread)
@@ -85,7 +87,10 @@ enable_testing()
 add_executable(PDBPC_unittest
         pdbpc/test/Main_TestSuite.cpp
         pdbpc/test/InternalUtils_TestSuite.cpp
-        pdbpc/test/Line-ATOM_TestSuite.cpp pdbpc/test/Line-MODEL_TestSuite.cpp pdbpc/test/line-ENDMDL_TestSuite.cpp pdbpc/test/simplePDBFixture.h pdbpc/test/Line-MASTER_END_TestSuite.cpp)
+        pdbpc/test/Line-ATOM_TestSuite.cpp
+        pdbpc/test/Line-MODEL_TestSuite.cpp
+        pdbpc/test/line-ENDMDL_TestSuite.cpp
+        pdbpc/test/Line-MASTER_END_TestSuite.cpp)
 
 target_link_libraries(PDBPC_unittest pdbpc_shared)
 target_link_libraries(PDBPC_unittest ${Boost_LIBRARIES})
