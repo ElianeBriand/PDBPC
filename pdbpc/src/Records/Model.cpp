@@ -6,20 +6,23 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <iostream>
 
-void pdbpc::Model::printModelRecord() {
-    BOOST_LOG_TRIVIAL(info) << "";
-    BOOST_LOG_TRIVIAL(info) << " * Model #" << this->modelNumber;
-    BOOST_LOG_TRIVIAL(info) << " |   Opening Line Number    : " << this->openingLineNumber;
-    BOOST_LOG_TRIVIAL(info) << " |   Opening Line : ";
-    BOOST_LOG_TRIVIAL(info) << " |   ";
-    BOOST_LOG_TRIVIAL(info) << " |         " <<this->openingLine;
-    BOOST_LOG_TRIVIAL(info) << " |   ";
-    BOOST_LOG_TRIVIAL(info) << " |   Closing Line Number    : " << this->closingLineNumber;
-    BOOST_LOG_TRIVIAL(info) << " |   Closing Line : ";
-    BOOST_LOG_TRIVIAL(info) << " |   ";
-    BOOST_LOG_TRIVIAL(info) << " |         " <<this->closingLine;
-    BOOST_LOG_TRIVIAL(info) << " |   ";
-    BOOST_LOG_TRIVIAL(info) << " *";
-    BOOST_LOG_TRIVIAL(info) << "";
+unsigned int pdbpc::Model::lastserialNumber = 0;
+
+void pdbpc::Model::printRecord() {
+    std::cout << "" << std::endl;
+    std::cout << " * Model #" << this->serialNumber << std::endl;
+    std::cout << " |   Opening Line Number    : " << this->openingLineNumber << std::endl;
+    std::cout << " |   Opening Line : " << std::endl;
+    std::cout << " |   " << std::endl;
+    std::cout << " |         " <<this->openingLine << std::endl;
+    std::cout << " |   " << std::endl;
+    std::cout << " |   Closing Line Number    : " << this->closingLineNumber << std::endl;
+    std::cout << " |   Closing Line : " << std::endl;
+    std::cout << " |   " << std::endl;
+    std::cout << " |         " <<this->closingLine << std::endl;
+    std::cout << " |   " << std::endl;
+    std::cout << " *" << std::endl;
+    std::cout << "" << std::endl;
 }

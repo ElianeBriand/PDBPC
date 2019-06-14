@@ -10,7 +10,8 @@
 
 namespace pdbpc {
 
-
+    struct Chain;
+    struct Model;
 
     struct Atom {
 
@@ -42,8 +43,10 @@ namespace pdbpc {
         int lineNumber = -1;
         std::string line;
 
+        std::weak_ptr<Model> parentModel;
+        std::weak_ptr<Chain> parentChain;
 
-        void printAtomRecord();
+        void printRecord();
 
     };
 }

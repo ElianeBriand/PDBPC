@@ -1,7 +1,7 @@
 PDB Parsing & Conformity in C++ is a complete and easy to use PDB file parser,
  that reports and tries to correct file format errors.
  
-
+[![Build Status](https://travis-ci.com/ElianeBriand/PDBPC.svg?branch=master)](https://travis-ci.com/ElianeBriand/PDBPC)
 
 
 # Basic usage
@@ -11,11 +11,15 @@ pdbpc::ParsedPDB ppdb = pdbpc::readPDBFile("../ExamplePDB/1HXW.pdb");
 
 // While PDBPC can parse through non-conforming/incorrect PDB file format,
 // (which can be useful when you can't modify the emitting software)
-// It is nonetheless recommended to check for parsing errors
+// It is nonetheless recommended to check and report errors
 
 if(ppdb.hasErrors) {
-    std::cout << "PDB file cannot be read" << std::endl;
-    return -2;
+    std::cout << "Error while parsing PDB file :" << std::endl;
+    for(const auto& record: ppdb.outOfBandRecords) {
+        if(record->severity != pdbpc::OutOfBandSeverity::error)
+            continue;
+        std::cout << record->type << ": " << record->subtype << std::end;
+    }
 }
 
 
@@ -24,15 +28,13 @@ if(ppdb.hasErrors) {
 // As a flat atom list
 for(const auto& atom : ppdb.atoms_flatlist) {
     std::cout << "Atom " << atom->atomName << " !" << std::endl;
-    
-    // record->printAtomRecord(); // Print a summary
 }
 
 // As a hierarchy
 for(const auto& model: ppdb.models) {
-    for(const auto& chain : model) {
-        for(const auto& res: chain) {
-            for(const auto& atom: res) {
+    for(const auto& chain : model->chains) {
+        for(const auto& residue: chain->residues) {
+            for(const auto& atom: residue->atoms) {
                 std::cout << "Atom " << atom->atomName << " !" << std::endl;
             }
         }
@@ -41,7 +43,7 @@ for(const auto& model: ppdb.models) {
 
 // As a mix : flat list from any hierarchical level
 for(const auto& model: ppdb.models) {
-    for(const auto& chain : model) {
+    for(const auto& chain : model->chains) {
         auto atom = chain.atoms_flatlist.at(23);
         std::cout << "Atom #23 is " << atom->atomName << " !" << std::endl;
     }

@@ -3,7 +3,7 @@ project(PDBPC VERSION 0.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 SET(CMAKE_CXX_FLAGS "-Wall")
 SET(CMAKE_CXX_COMPILER "/usr/bin/g++")
@@ -14,7 +14,7 @@ SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -march=native -g  ")
 
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED COMPONENTS log filesystem unit_test_framework)
+find_package(Boost REQUIRED COMPONENTS filesystem unit_test_framework)
 include_directories(${Boost_INCLUDE_DIRS})
 
 include_directories(./pdbpc/include/)
@@ -31,9 +31,14 @@ set(PDBPC_SOURCE_LIST
         pdbpc/src/Parser/PostProcessing/postProcessParsedPDB.cpp
         pdbpc/src/Parser/parseEndModelLine.cpp
         pdbpc/src/Parser/PostProcessing/pedanticVerifications.cpp
-        pdbpc/src/Parser/PostProcessing/modelPostProcessing.cpp
+        pdbpc/src/Parser/parseAtomLine.cpp
+        pdbpc/src/Records/Atom.cpp
+        pdbpc/src/Records/Residue.cpp
+        pdbpc/src/Records/Chain.cpp
+        pdbpc/src/Utility/readPDBBlock.cpp
+        pdbpc/src/Parser/parseMasterEndLine.cpp
 
-        pdbpc/src/Parser/parseAtomLine.cpp pdbpc/include/pdbpc/Parser/parseAtomLine.h pdbpc/src/Records/Atom.cpp pdbpc/include/pdbpc/Records/Atom.h pdbpc/src/Records/Residue.cpp pdbpc/include/pdbpc/Records/Residue.h)
+        )
 
 
 
@@ -80,11 +85,11 @@ enable_testing()
 add_executable(PDBPC_unittest
         pdbpc/test/Main_TestSuite.cpp
         pdbpc/test/InternalUtils_TestSuite.cpp
-        pdbpc/test/Line-ATOM_TestSuite.cpp pdbpc/test/Line-MODEL_TestSuite.cpp pdbpc/test/line-ENDMDL_TestSuite.cpp)
+        pdbpc/test/Line-ATOM_TestSuite.cpp pdbpc/test/Line-MODEL_TestSuite.cpp pdbpc/test/line-ENDMDL_TestSuite.cpp pdbpc/test/simplePDBFixture.h pdbpc/test/Line-MASTER_END_TestSuite.cpp)
 
 target_link_libraries(PDBPC_unittest pdbpc_shared)
 target_link_libraries(PDBPC_unittest ${Boost_LIBRARIES})
 target_link_libraries(PDBPC_unittest pthread)
 target_include_directories(PDBPC_unittest PRIVATE ./pdbpc/include/)
 
-add_test(PDBPC_unittest pdbpc_static)
+add_test(AllUnitTest PDBPC_unittest --catch_system_error=yes --log_level=all )

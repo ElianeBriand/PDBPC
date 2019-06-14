@@ -10,6 +10,7 @@
 
 #include <pdbpc/Records/Atom.h>
 #include <pdbpc/Records/Residue.h>
+#include <pdbpc/Utility/internalUtils.h>
 
 namespace b = boost;
 
@@ -75,6 +76,7 @@ namespace pdbpc {
                                             ParsedPDB& ppdb,
                                             const std::string& atomLine,
                                             int lineNumber);
+        void assignAtomToParentModel(const std::shared_ptr<Atom>& newAtom,ParsedPDB& ppdb);
 
 
     void parseAtomLine(ParsedPDB& ppdb, const std::string& originalAtomLine, int lineNumber) {
@@ -83,24 +85,8 @@ namespace pdbpc {
         std::string atomLine = originalAtomLine;
 
         // Preprocessing the line (column number adjustment)
-        if (atomLine.length() > 80) {
-            // Too many columns
-            std::string trimmed_modelLine = b::trim_right_copy(originalAtomLine);
-            auto rec = std::make_shared<OutOfBandRecord>();
-            if (trimmed_modelLine.length() == 80) {
-                rec->severity = OutOfBandSeverity::idiosyncrasy;
-                rec->subtype = OutOfBandSubType::SupernumerarySpaceAfterLastColumn;
-            } else {
-                rec->severity = OutOfBandSeverity::error;
-                rec->subtype = OutOfBandSubType::SupernumeraryContentAfterLastColumn;
-            }
-            rec->line = originalAtomLine;
-            rec->lineNumber = lineNumber;
-            rec->recoveryStatus = RecoveryStatus::recovered;
-            ppdb.outOfBandRecords.push_back(rec);
+        trimAfterLastColumn(ppdb,atomLine,lineNumber, 80);
 
-            atomLine = originalAtomLine.substr(0, 79);
-        }
 
         // Dispatching for parse
         if (atomLine.length() == 80) {
@@ -186,8 +172,7 @@ namespace pdbpc {
 
         if(hasSucceeded)
         {
-            ppdb.atoms_flatlist.push_back(newAtom);
-            ppdb.models.back()->atoms_flatlist.push_back(newAtom);
+            assignAtomToParentModel(newAtom,ppdb);
         }
     }
 
@@ -216,7 +201,7 @@ namespace pdbpc {
 
         hasSucceeded &= parseAtomLine_AtomNameResidueNameString(newAtom,AtomNameString,ResNameString,ppdb,atomLine,lineNumber);
 
-        hasSucceeded &=  parseAtomLine_AltLocIDString(newAtom,AltLocIDString,ppdb,atomLine,lineNumber);
+        hasSucceeded &= parseAtomLine_AltLocIDString(newAtom,AltLocIDString,ppdb,atomLine,lineNumber);
 
         hasSucceeded &= parseAtomLine_ChainIDString(newAtom,ChainIDString,ppdb,atomLine,lineNumber);
 
@@ -233,8 +218,7 @@ namespace pdbpc {
 
         if(hasSucceeded)
         {
-            ppdb.atoms_flatlist.push_back(newAtom);
-            ppdb.models.back()->atoms_flatlist.push_back(newAtom);
+            assignAtomToParentModel(newAtom,ppdb);
         }
 
     }
@@ -577,6 +561,13 @@ namespace pdbpc {
             newAtom->charge = charge;
         }
         return true;
+    }
+
+    void assignAtomToParentModel(const std::shared_ptr<Atom>& newAtom,ParsedPDB& ppdb) {
+        ppdb.atoms_flatlist.push_back(newAtom);
+        std::shared_ptr<Model> modelForCurrentAtom = ppdb.models.back();
+        modelForCurrentAtom->atoms_flatlist.push_back(newAtom);
+        newAtom->parentModel = modelForCurrentAtom;
     }
 
 

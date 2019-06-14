@@ -2,11 +2,8 @@
 
 #include <pdbpc/pdbpc.h>
 
-#include <pdbpc/Utility/LogPrettyPrint.h>
 
 int main() {
-
-    pdbpc::setupLogPrinting(); // Log pretty printing
 
     pdbpc::ParsedPDB ppdb = pdbpc::readPDBFile("../ExamplePDB/1HXW.pdb");
 
@@ -14,11 +11,22 @@ int main() {
         record->printRecord();
     }
 
-    for(const auto& record: ppdb.models) {
-        record->printModelRecord();
+//    if(ppdb.hasErrors)
+//        return 1;
+
+    for(const auto& record: ppdb.outOfBandRecords) {
+        record->printRecord();
     }
 
-    for(const auto& record: ppdb.atoms_flatlist) {
-        record->printAtomRecord();
-    }
+//    for(const auto& model: ppdb.models) {
+//        for(const auto& chain: model->chains)
+//        {
+//            for(const auto& residue: chain->residues)
+//            {
+//                residue->printRecord();
+//            }
+//        }
+//    }
+
+
 }

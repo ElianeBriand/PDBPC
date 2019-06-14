@@ -27,4 +27,92 @@ BOOST_AUTO_TEST_SUITE(InternalUtils_testSuite)
 
     }
 
+    BOOST_AUTO_TEST_CASE(trimAfterLastColumn_Test,* boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb;
+        std::string line = "MODEL        1   ";
+
+        trimAfterLastColumn(ppdb,line,23,14);
+
+        BOOST_TEST(line.length() == 14);
+        BOOST_TEST(line == "MODEL        1");
+
+
+
+    }
+
+    BOOST_AUTO_TEST_CASE(parseOrError_int_Test,* boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb;
+        std::string line = "DUMMYLINE        1   ";
+
+        std::string intField1 = " 173 ";
+
+        std::optional<int> MaybeInt1 =  pdbpc::parseOrRecoverableError<int>( ppdb,
+                line,
+                12,
+                intField1,
+                pdbpc::OutOfBandSubType::GenericFieldParseError);
+
+        BOOST_TEST(MaybeInt1.has_value());
+        BOOST_TEST(MaybeInt1.value() == 173);
+        BOOST_TEST(ppdb.outOfBandRecords.empty());
+
+        std::string intField2 = " -17423 ";
+
+        std::optional<int> MaybeInt2 =  pdbpc::parseOrRecoverableError<int>( ppdb,
+                                                                             line,
+                                                                             12,
+                                                                             intField2,
+                                                                             pdbpc::OutOfBandSubType::GenericFieldParseError);
+
+        BOOST_TEST(MaybeInt2.has_value());
+        BOOST_TEST(MaybeInt2.value() == -17423);
+        BOOST_TEST(ppdb.outOfBandRecords.empty());
+
+        std::string intField3 = " -17423.44 ";
+
+        std::optional<int> MaybeInt3 =  pdbpc::parseOrRecoverableError<int>( ppdb,
+                                                                             line,
+                                                                             12,
+                                                                             intField3,
+                                                                             pdbpc::OutOfBandSubType::GenericFieldParseError);
+
+        BOOST_TEST(!MaybeInt3.has_value());
+        BOOST_TEST(ppdb.outOfBandRecords.size() == 1);
+
+
+    }
+
+
+    BOOST_AUTO_TEST_CASE(parseOrError_double_Test,* boost::unit_test::tolerance(0.00001)) {
+        pdbpc::ParsedPDB ppdb;
+        std::string line = "DUMMYLINE        1   ";
+
+        std::string floatField1 = " 173 ";
+
+        std::optional<double> MaybeFloat1 =  pdbpc::parseOrRecoverableError<double>( ppdb,
+                                                                             line,
+                                                                             12,
+                                                                             floatField1,
+                                                                             pdbpc::OutOfBandSubType::GenericFieldParseError);
+
+        BOOST_TEST(MaybeFloat1.has_value());
+        BOOST_TEST(MaybeFloat1.value() == 173.0);
+        BOOST_TEST(ppdb.outOfBandRecords.empty());
+
+        std::string floatField2 = " -173.4 ";
+
+        std::optional<double> MaybeFloat2 =  pdbpc::parseOrRecoverableError<double>( ppdb,
+                                                                                     line,
+                                                                                     12,
+                                                                                     floatField2,
+                                                                                     pdbpc::OutOfBandSubType::GenericFieldParseError);
+
+        BOOST_TEST(MaybeFloat2.has_value());
+        BOOST_TEST(MaybeFloat2.value() == -173.4);
+        BOOST_TEST(ppdb.outOfBandRecords.empty());
+
+
+    }
+
+
 BOOST_AUTO_TEST_SUITE_END()

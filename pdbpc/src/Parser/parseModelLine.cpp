@@ -11,40 +11,11 @@
 namespace b = boost;
 
 #include <iostream>
+#include <pdbpc/Utility/internalUtils.h>
 
 
 namespace pdbpc {
 
-    namespace {
-
-        bool doLexicalCastOnTrimmedLine(const std::string& trimmedLine,
-                                        int& modelNumber,
-                                        ParsedPDB& ppdb,
-                                        const std::string& originalModelLine,
-                                        int lineNumber) {
-            bool castHasSucceeded = true;
-            try {
-                modelNumber = b::lexical_cast<int>(trimmedLine);
-            }
-            catch (const b::bad_lexical_cast& e) {
-                castHasSucceeded = false;
-            }
-
-            if (!castHasSucceeded) {
-                auto rec2 = std::make_shared<OutOfBandRecord>();
-                rec2->severity = OutOfBandSeverity::error;
-                rec2->type = OutOfBandType::IncorrectPDBLineFormat;
-                rec2->subtype = OutOfBandSubType::unexpectedStringInsteadOfModelNumber;
-                rec2->line = originalModelLine;
-                rec2->lineNumber = lineNumber;
-                rec2->recoveryStatus = RecoveryStatus::unrecoverable;
-                ppdb.outOfBandRecords.push_back(rec2);
-                return false;
-            }
-            return true;
-        }
-
-    }
 
 
     void parseModelLine(ParsedPDB& ppdb, const std::string& originalModelLine, int lineNumber) {
@@ -52,36 +23,26 @@ namespace pdbpc {
 
         // Will be used for field separation
         int modelNumber = -1;
+        std::string line = originalModelLine;
 
-        if (originalModelLine.length() > 14) {
-            std::string trimmed_modelLine = b::trim_right_copy(originalModelLine);
-            if (trimmed_modelLine.length() == 14) {
-                // It was only spaces
-                auto rec = std::make_shared<OutOfBandRecord>();
-                rec->severity = OutOfBandSeverity::idiosyncrasy;
-                rec->type = OutOfBandType::IncorrectPDBLineFormat;
-                rec->subtype = OutOfBandSubType::SupernumerarySpaceAfterLastColumn;
-                rec->line = originalModelLine;
-                rec->lineNumber = lineNumber;
-                rec->recoveryStatus = RecoveryStatus::recovered;
-                ppdb.outOfBandRecords.push_back(rec);
-            }
-        }
+        trimAfterLastColumn(ppdb,line,lineNumber,14);
 
-        std::string expectedModelNumberfield = originalModelLine.substr(5);
-        std::string trimmed_modelNumber = b::trim_copy(expectedModelNumberfield);
-        bool castHasSucceeded = doLexicalCastOnTrimmedLine(trimmed_modelNumber,
-                                                           modelNumber,
-                                                           ppdb,
-                                                           originalModelLine,
-                                                           lineNumber);
-        if (!castHasSucceeded) {
+        std::string modelNumberField = line.substr(5);
+
+        std::optional<int> MaybeModelNum =  parseOrUnrecoverableError<int>(ppdb,
+                originalModelLine,
+                lineNumber,
+                modelNumberField,
+                OutOfBandSubType::unexpectedStringInsteadOfModelNumber );
+
+        if (! MaybeModelNum.has_value()) {
             return;
         }
 
+        modelNumber = MaybeModelNum.value();
+
         // If this has succeeded, there was a number in the field.
         // However it might have been a shorter field than expected
-
 
         if (originalModelLine.length() < 14) {
             // The line is incorrectly formatted, but there is a recoverable model number
@@ -96,7 +57,6 @@ namespace pdbpc {
             ppdb.outOfBandRecords.push_back(rec);
         }
 
-        // From this point modelNumber is initialized with the lexically casted model number
 
         if (modelNumber < 0) {
             // Model number should be >0 (0 tolerated)
@@ -161,6 +121,7 @@ namespace pdbpc {
         modelRecord->openingLineNumber = lineNumber;
         modelRecord->closingLineNumber = -1;
         modelRecord->modelNumber = modelNumber;
+        modelRecord->serialNumber = ++Model::lastserialNumber;
 
         ppdb.models.push_back(modelRecord);
     }

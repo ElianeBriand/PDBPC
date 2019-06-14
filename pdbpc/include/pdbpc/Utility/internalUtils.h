@@ -5,16 +5,22 @@
 #ifndef PDBPC_INTERNALUTILS_H
 #define PDBPC_INTERNALUTILS_H
 
+#include <optional>
+
 #include <boost/filesystem.hpp>
 #include <pdbpc/ParsedPDB.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
+
+namespace b = boost;
 namespace bfs = boost::filesystem;
 
 
 namespace pdbpc {
 
 
-    void checkPDBPath(bfs::path pdbPath);
+    bool checkPDBPath(ParsedPDB& ppdb, bfs::path pdbPath);
 
     void checkForErrorsWarningsProblems(ParsedPDB& ppdb);
 
@@ -22,7 +28,85 @@ namespace pdbpc {
 
     int findNextFreeModelNumber(ParsedPDB& ppdb);
 
+    bool inflateShorterLineOrFail(ParsedPDB& ppdb, std::string& line, int lineNumber, unsigned int minimalNumCol, unsigned int targetNumColumn);
+
+    void trimAfterLastColumn(ParsedPDB& ppdb, std::string& line, int lineNumber, unsigned int numColumn);
+
+
+    template<typename T>
+    std::optional<T> parseOrRecoverableError(ParsedPDB& ppdb,
+                                               const std::string& line,
+                                               int lineNumber,
+                                               const std::string& field, OutOfBandSubType subtypeIfFail) {
+        std::string trimmedField =  b::trim_copy(field);
+        T presumptiveResult = -1;
+        try {
+            presumptiveResult = b::lexical_cast<T>(trimmedField);
+        }
+        catch (const b::bad_lexical_cast& e) {
+            auto rec = std::make_shared<OutOfBandRecord>();
+            rec->severity = OutOfBandSeverity::error;
+            rec->type = OutOfBandType::IncorrectPDBLineFormat;
+            rec->subtype = subtypeIfFail;
+            rec->line = line + std::string(" | FIELD=") +  field;
+            rec->lineNumber = lineNumber;
+            rec->recoveryStatus = RecoveryStatus::recovered;
+            ppdb.outOfBandRecords.push_back(rec);
+            return std::nullopt;
+        }
+        return presumptiveResult;
     }
+
+    template<typename T>
+    std::optional<T> parseOrUnrecoverableError(ParsedPDB& ppdb,
+                                  const std::string& line,
+                                  int lineNumber,
+                                  const std::string& field, OutOfBandSubType subtypeIfFail) {
+        std::string trimmedField =  b::trim_copy(field);
+        T presumptiveResult = -1;
+        try {
+            presumptiveResult = b::lexical_cast<T>(trimmedField);
+        }
+        catch (const b::bad_lexical_cast& e) {
+            auto rec = std::make_shared<OutOfBandRecord>();
+            rec->severity = OutOfBandSeverity::error;
+            rec->type = OutOfBandType::IncorrectPDBLineFormat;
+            rec->subtype = subtypeIfFail;
+            rec->line = line + std::string(" | FIELD=") +  field;
+            rec->lineNumber = lineNumber;
+            rec->recoveryStatus = RecoveryStatus::unrecoverable;
+            ppdb.outOfBandRecords.push_back(rec);
+            return std::nullopt;
+        }
+        return presumptiveResult;
+    }
+
+
+    namespace {
+        template<typename T>
+        void checkNoEmptyOptional_internal(bool& noEmpty, std::optional<T> value) {
+
+        }
+
+        template<typename T, typename... Args>
+        void checkNoEmptyOptional_internal(bool& noEmpty, std::optional<T> value, Args... args) {
+            noEmpty = noEmpty && value.has_value();
+            checkNoEmptyOptional_internal(noEmpty, args...);
+        }
+    }
+
+
+
+    template<typename... Args>
+    bool checkNoEmptyOptional(Args... values) {
+        bool noEmpty = true;
+        // Compile time loop to insert the constructor arguments in the vector
+        checkNoEmptyOptional_internal(noEmpty, values...);
+
+        return noEmpty;
+    }
+
+}
 
 
 #endif //PDBPC_INTERNALUTILS_H

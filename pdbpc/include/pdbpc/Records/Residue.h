@@ -7,6 +7,8 @@
 
 #include <string>
 #include <map>
+#include <memory>
+#include <vector>
 
 namespace pdbpc {
 
@@ -45,16 +47,39 @@ namespace pdbpc {
 
     extern std::map<ResidueType, std::map<std::string, double> > residueAtomChargeLookupTable;
 
+    struct Model;
+    struct Chain;
+    struct Atom;
+
     struct Residue {
 
+        static unsigned int lastserialNumber;
+
+
+        int serialNumber;
+
+
+        std::string name;
+        ResidueType type;
+
+        int sequenceNumber;
+        std::string insertionCode;
+
+        std::weak_ptr<Model> parentModel;
+        std::weak_ptr<Chain> parentChain;
+
+        std::vector<std::shared_ptr<Atom>> atoms;
+
+        std::string openingLine;
+        int openingLineNumber = -1;
+
+        std::string closingLine;
+        int closingLineNumber = -1;
 
 
 
-        int lineNumber = -1;
-        std::string line;
 
-
-        void printResidueRecord();
+        void printRecord();
 
     };
 }

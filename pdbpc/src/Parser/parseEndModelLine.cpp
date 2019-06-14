@@ -6,6 +6,7 @@
 
 
 #include <boost/algorithm/string.hpp>
+#include <pdbpc/Utility/internalUtils.h>
 
 namespace b = boost;
 
@@ -16,26 +17,10 @@ namespace pdbpc {
 
         // Standard conforming ENDMDL lines must have 6 columns, composing the keyword ENDMDL
 
-        // Column preprocessing
-        if(originalEndModelLine.length() > 6) {
-            // Too many columns
-            std::string trimmed_endModelLine = b::trim_right_copy(originalEndModelLine);
+        std::string line = originalEndModelLine;
 
-            auto rec = std::make_shared<OutOfBandRecord>();
+        trimAfterLastColumn(ppdb, line, lineNumber, 6);
 
-            rec->type = OutOfBandType::IncorrectPDBLineFormat;
-            if(trimmed_endModelLine.length() == 6) {
-                rec->severity = OutOfBandSeverity::idiosyncrasy;
-                rec->subtype = OutOfBandSubType::SupernumerarySpaceAfterLastColumn;
-            }else {
-                rec->severity = OutOfBandSeverity::error;
-                rec->subtype = OutOfBandSubType::SupernumeraryContentAfterLastColumn;
-            }
-            rec->line = originalEndModelLine;
-            rec->lineNumber = lineNumber;
-            rec->recoveryStatus = RecoveryStatus::recovered;
-            ppdb.outOfBandRecords.push_back(rec);
-        }
 
         if(ppdb.models.empty()) {
             // ENDMDL but no MODEL statement were encountered before
@@ -69,7 +54,6 @@ namespace pdbpc {
         lastModel->closingLine = originalEndModelLine;
         lastModel->closingLineNumber = lineNumber;
 
-        return;
     }
 
 }

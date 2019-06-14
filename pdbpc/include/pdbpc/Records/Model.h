@@ -10,9 +10,14 @@
 #include <memory>
 
 #include <pdbpc/Records/Atom.h>
+#include "Chain.h"
 
 namespace pdbpc {
     struct Model {
+
+        static unsigned int lastserialNumber;
+
+        int serialNumber;
 
         int modelNumber;
 
@@ -22,11 +27,17 @@ namespace pdbpc {
         std::string closingLine;
         int closingLineNumber = -1;
 
+        std::vector<std::shared_ptr<Chain>> chains;
 
         std::vector<std::shared_ptr<Atom>> atoms_flatlist;
+        std::vector<std::shared_ptr<Residue>> residues_flatlist;
 
+        void printRecord();
 
-        void printModelRecord();
+        struct Details {
+            int originalModelNumber = -1;
+
+        } details;
 
     };
 }

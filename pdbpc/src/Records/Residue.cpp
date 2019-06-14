@@ -4,15 +4,21 @@
 
 #include <pdbpc/Records/Residue.h>
 
+
+
 #include <set>
 #include <string>
 #include <map>
 #include <tuple>
 #include <algorithm>
+#include <iostream>
 
 namespace pdbpc {
 
-     std::set<std::tuple<ResidueType, std::string, std::string> > residueShorthandSet = {
+
+    unsigned int Residue::lastserialNumber = 0;
+
+    std::set<std::tuple<ResidueType, std::string, std::string> > residueShorthandSet = {
                 {ResidueType::heteroatom,     "heteroatom",     "HET"},
                 {ResidueType::unknown,        "unknown",        "UNK"},
                 {ResidueType::alanine,        "alanine",        "ALA"},
@@ -246,8 +252,17 @@ namespace pdbpc {
 
 
 
-    void Residue::printResidueRecord() {
-
+    void Residue::printRecord() {
+        std::cout << "" << std::endl;
+        std::cout << " * Residue " << this->serialNumber << std::endl;
+        std::cout << " |   Name              : " << this->name << std::endl;
+        std::cout << " |   Type              : " << this->type << std::endl;
+        std::cout << " |   Sequence number   : " << this->sequenceNumber << std::endl;
+        std::cout << " |   Insertion code    : " << this->insertionCode << std::endl;
+        std::cout << " |   Number of atom    : " << this->atoms.size() << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " *" << std::endl;
+        std::cout << "" << std::endl;
     }
 
     std::string residueTypeToThreeLetterCode(ResidueType t) {

@@ -6,10 +6,12 @@
 
 #include <pdbpc/Parser/parseModelLine.h>
 #include <pdbpc/Parser/parseEndModelLine.h>
+#include <pdbpc/Parser/parseAtomLine.h>
+#include <pdbpc/Parser/parseMasterEndLine.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/log/trivial.hpp>
-#include <pdbpc/Parser/parseAtomLine.h>
+
 
 
 namespace b = boost;
@@ -18,6 +20,10 @@ namespace pdbpc {
 
     void readPDBLine(ParsedPDB& ppdb, const std::string& line, int lineNumber) {
 
+        // Triggered checks go here
+        EndRecordChecks(ppdb,line,lineNumber);
+
+
         if(b::starts_with(line, "MODEL ")) {
 
             parseModelLine(ppdb,line,lineNumber);
@@ -25,6 +31,14 @@ namespace pdbpc {
         }else if (b::starts_with(line, "ENDMDL")) {
 
             parseEndModelLine(ppdb,line,lineNumber);
+
+        }else if (b::starts_with(line, "END   ")) {
+
+            parseEndLine(ppdb,line,lineNumber);
+
+        }else if (b::starts_with(line, "MASTER")) {
+
+            parseMasterLine(ppdb,line,lineNumber);
 
         }else if (b::starts_with(line, "ATOM  ")) {
 

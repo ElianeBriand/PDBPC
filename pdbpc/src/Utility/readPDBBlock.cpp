@@ -1,6 +1,8 @@
 //
-// Created by eliane on 11/05/19.
+// Created by eliane on 31/05/19.
 //
+
+#include <sstream>
 
 #include <pdbpc/Utility/readPDBFile.h>
 #include <pdbpc/Utility/internalUtils.h>
@@ -9,33 +11,22 @@
 #include <pdbpc/Parser/PostProcessing/postProcessParsedPDB.h>
 #include <pdbpc/Parser/PostProcessing/pedanticVerifications.h>
 
-#include <boost/filesystem.hpp>
-#include <boost/log/trivial.hpp>
-
-namespace bfs = boost::filesystem;
 
 namespace pdbpc {
 
 
-    ParsedPDB readPDBFile(const std::string& filepath, ParserSettings settings) {
+    ParsedPDB readPDBBlock(const std::string& PDBBlock, ParserSettings settings = ParserSettings()) {
         ParsedPDB ppdb;
 
-        bfs::path pdbPath(filepath);
-
-        if(!checkPDBPath(ppdb,pdbPath))
-        {
-            ppdb.hasErrors = true;
-            return ppdb;
-        }
 
         ppdb.settings = settings;
 
         createPlaceholderModelAndChain(ppdb);
 
-        bfs::ifstream fileStream(pdbPath);
+        std::stringstream stringStream(PDBBlock);
         std::string line;
         int lineNumber = 1;
-        while(getline(fileStream, line)){
+        while(getline(stringStream, line)){
             readPDBLine(ppdb,line, lineNumber);
             lineNumber++;
         }

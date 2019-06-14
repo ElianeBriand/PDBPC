@@ -6,39 +6,39 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <iostream>
 
 namespace pdbpc {
 
-    void Atom::printAtomRecord() {
-        BOOST_LOG_TRIVIAL(info) << "";
-        BOOST_LOG_TRIVIAL(info) << " * Atom ";
-        BOOST_LOG_TRIVIAL(info) << " |   Chain           : " << this->chainIdentifier;
-        BOOST_LOG_TRIVIAL(info) << " |   Serial number   : " << this->serialNumber;
-        BOOST_LOG_TRIVIAL(info) << " |   ";
-        BOOST_LOG_TRIVIAL(info) << " |   Alt. Loc. ID    : " << this->alternateLocationIdentifier;
-        BOOST_LOG_TRIVIAL(info) << " |   ";
-        BOOST_LOG_TRIVIAL(info) << " |   Residue serial  : " << this->residueSequenceNumber;
-        BOOST_LOG_TRIVIAL(info) << " |   Residue code    : " << this->residueName;
-        BOOST_LOG_TRIVIAL(info) << " |   Res. ins. code  : " << this->residueInsertionCode;
-        BOOST_LOG_TRIVIAL(info) << " |   Residue name    : " << residueTypeToFullName(this->residueType);
-        BOOST_LOG_TRIVIAL(info) << " |   ";
-        BOOST_LOG_TRIVIAL(info) << " |   Atom name       : " << this->atomName;
-        BOOST_LOG_TRIVIAL(info) << " |   Element         : " << this->element;
-        BOOST_LOG_TRIVIAL(info) << " |   Position x      : " << this->x;
-        BOOST_LOG_TRIVIAL(info) << " |   Position y      : " << this->y;
-        BOOST_LOG_TRIVIAL(info) << " |   Position z      : " << this->z;
-        BOOST_LOG_TRIVIAL(info) << " |   ";
-        BOOST_LOG_TRIVIAL(info) << " |   Occupancy       : " << this->occupancy;
-        BOOST_LOG_TRIVIAL(info) << " |   Temp. factor    : " << this->temperatureFactor;
-        BOOST_LOG_TRIVIAL(info) << " |   Charge          : " << this->charge;
-        BOOST_LOG_TRIVIAL(info) << " |   ";
-        BOOST_LOG_TRIVIAL(info) << " |   Line Number    : " << this->lineNumber;
-        BOOST_LOG_TRIVIAL(info) << " |   Line : ";
-        BOOST_LOG_TRIVIAL(info) << " |   ";
-        BOOST_LOG_TRIVIAL(info) << " |         " <<this->line;
-        BOOST_LOG_TRIVIAL(info) << " |   ";
-        BOOST_LOG_TRIVIAL(info) << " *";
-        BOOST_LOG_TRIVIAL(info) << "";
+    void Atom::printRecord() {
+        std::cout << "" << std::endl;
+        std::cout << " * Atom " << this->serialNumber << std::endl;
+        std::cout << " |   Chain           : " << this->chainIdentifier << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " |   Alt. Loc. ID    : " << this->alternateLocationIdentifier << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " |   Residue serial  : " << this->residueSequenceNumber << std::endl;
+        std::cout << " |   Residue code    : " << this->residueName << std::endl;
+        std::cout << " |   Res. ins. code  : " << this->residueInsertionCode << std::endl;
+        std::cout << " |   Residue name    : " << residueTypeToFullName(this->residueType) << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " |   Atom name       : " << this->atomName << std::endl;
+        std::cout << " |   Element         : " << this->element << std::endl;
+        std::cout << " |   Position x      : " << this->x << std::endl;
+        std::cout << " |   Position y      : " << this->y << std::endl;
+        std::cout << " |   Position z      : " << this->z << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " |   Occupancy       : " << this->occupancy << std::endl;
+        std::cout << " |   Temp. factor    : " << this->temperatureFactor << std::endl;
+        std::cout << " |   Charge          : " << this->charge << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " |   Line Number    : " << this->lineNumber << std::endl;
+        std::cout << " |   Line : " << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " |         " <<this->line << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " *" << std::endl;
+        std::cout << "" << std::endl;
     }
 }
 

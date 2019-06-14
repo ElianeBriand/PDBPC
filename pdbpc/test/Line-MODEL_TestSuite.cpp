@@ -56,7 +56,6 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
         BOOST_TEST(ppdb_2.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::idiosyncrasy);
         BOOST_TEST(ppdb_2.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
         BOOST_TEST(ppdb_2.outOfBandRecords.back()->lineNumber == 12);
-        BOOST_TEST(ppdb_2.outOfBandRecords.back()->line == NonConformingLine_space);
 
         // Correctly set opening line number and line
         BOOST_TEST(ppdb_2.models.back()->openingLineNumber == 12);
@@ -74,14 +73,12 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
         BOOST_TEST(ppdb_3.outOfBandRecords.size() == 1);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype ==
-                   pdbpc::OutOfBandSubType::unexpectedStringInsteadOfModelNumber);
+                   pdbpc::OutOfBandSubType::SupernumeraryContentAfterLastColumn);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::error);
-        BOOST_TEST(ppdb_3.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::unrecoverable);
+        BOOST_TEST(ppdb_3.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->lineNumber == 12);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->line == NonConformingLine_junk);
 
-        //  No models are added
-        BOOST_TEST(ppdb_3.models.empty());
     }
 
     BOOST_FIXTURE_TEST_CASE(MODEL_NonConforming_ShorterField, LineFixture_MODEL, *boost::unit_test::timeout(10)) {

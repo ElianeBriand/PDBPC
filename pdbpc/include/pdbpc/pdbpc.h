@@ -7,5 +7,6 @@
 
 #include <pdbpc/ParsedPDB.h>
 #include <pdbpc/Utility/readPDBFile.h>
+#include <pdbpc/Utility/readPDBBlock.h>
 
 #endif //PDBPC_PDBPC_H

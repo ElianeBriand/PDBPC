@@ -17,6 +17,7 @@ namespace pdbpc {
     };
 
     enum class OutOfBandType  {
+        FileAccessError,
         UnhandledPDBLine,
         IncorrectPDBLineFormat,
         IncorrectPDBFileStructure,
@@ -24,6 +25,15 @@ namespace pdbpc {
     };
 
     enum class OutOfBandSubType  {
+        //File access error
+        FileNotFound,
+        FilePathIsDirectory,
+        FileExtensionNotPDB,
+        FileNotARegularFile,
+
+
+        //Generic errors
+        GenericFieldParseError,
         NonRecognizedLinePrefix,
         SupernumerarySpaceAfterLastColumn,
         SupernumeraryContentAfterLastColumn,
@@ -52,7 +62,21 @@ namespace pdbpc {
         AtomNoElementName,
         AtomElementNameContainsNonLetter,
         AtomAltLocIdContainsNonLetter,
-        AtomMissingChainID
+        AtomMissingChainID,
+
+        //Residue Related error
+        ResidueInconsistentInsertionCode,
+        ResidueInconsistentResidueName,
+        ResidueInconsistentInsertionCodeAndResidueName,
+
+
+        // MASTER RECORD error
+        MasterRecordFieldParseError,
+        MasterRecordCheckIncomplete,
+        MasterRecordTooShort,
+
+        // END record error
+        FileContinuePastEndRecord
 
     };
 
@@ -70,6 +94,7 @@ namespace pdbpc {
     std::string OutOfBandRecord_SeverityToString(OutOfBandSeverity severity);
     std::string OutOfBandRecord_TypeToString(OutOfBandType type);
     std::string OutOfBandRecord_SubTypeToString(OutOfBandSubType subtype);
+    std::string OutOfBandRecord_SubTypeToExplainationString(OutOfBandSubType subtype);
     std::string OutOfBandRecord_RecoveryStatusToString(RecoveryStatus recoveryStatus);
 
     struct OutOfBandRecord {
