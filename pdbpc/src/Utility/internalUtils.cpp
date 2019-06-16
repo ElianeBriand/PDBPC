@@ -18,7 +18,7 @@
  *
  */
 
-#include <pdbpc/Utility/internalUtils.h>
+#include <Utility/internalUtils.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>

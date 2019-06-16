@@ -26,11 +26,11 @@
 #include <boost/test/unit_test.hpp>
 
 #include <pdbpc/pdbpc.h>
-#include <pdbpc/Parser/parseEndModelLine.h>
-#include <pdbpc/Parser/parseModelLine.h>
-#include <pdbpc/Parser/parseAtomLine.h>
+#include "../src/Parser/parseEndModelLine.h"
+#include "../src/Parser/parseModelLine.h"
+#include "../src/Parser/parseAtomLine.h"
 #include <pdbpc/Records/OutOfBandRecord.h>
-#include <pdbpc/Utility/internalUtils.h>
+#include "../src/Utility/internalUtils.h"
 
 #include "simplePDBFixture.h"
 

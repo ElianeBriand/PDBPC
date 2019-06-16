@@ -18,7 +18,7 @@
  *
  */
 
-#include <pdbpc/Parser/parseAtomLine.h>
+#include <Parser/parseAtomLine.h>
 
 
 #include <boost/algorithm/string.hpp>
@@ -26,7 +26,7 @@
 
 #include <pdbpc/Records/Atom.h>
 #include <pdbpc/Records/Residue.h>
-#include <pdbpc/Utility/internalUtils.h>
+#include <Utility/internalUtils.h>
 
 namespace b = boost;
 

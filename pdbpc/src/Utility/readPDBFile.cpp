@@ -19,11 +19,11 @@
  */
 
 #include <pdbpc/Utility/readPDBFile.h>
-#include <pdbpc/Utility/internalUtils.h>
+#include <Utility/internalUtils.h>
 
-#include <pdbpc/Parser/readPDBLine.h>
-#include <pdbpc/Parser/PostProcessing/postProcessParsedPDB.h>
-#include <pdbpc/Parser/PostProcessing/pedanticVerifications.h>
+#include <Parser/readPDBLine.h>
+#include <Parser/PostProcessing/postProcessParsedPDB.h>
+#include <Parser/PostProcessing/pedanticVerifications.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>

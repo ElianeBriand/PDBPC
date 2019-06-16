@@ -18,16 +18,17 @@
  *
  */
 
-#include <pdbpc/Parser/readPDBLine.h>
+#include "readPDBLine.h"
 
-#include <pdbpc/Parser/parseModelLine.h>
-#include <pdbpc/Parser/parseEndModelLine.h>
-#include <pdbpc/Parser/parseAtomLine.h>
-#include <pdbpc/Parser/parseMasterEndLine.h>
+#include "parseModelLine.h"
+#include "parseEndModelLine.h"
+#include "parseAtomLine.h"
+#include "parseMasterEndLine.h"
+#include "parseHetRelatedLines.h"
+
 
 #include <boost/algorithm/string.hpp>
 #include <boost/log/trivial.hpp>
-
 
 
 namespace b = boost;
@@ -55,6 +56,10 @@ namespace pdbpc {
         }else if (b::starts_with(line, "MASTER")) {
 
             parseMasterLine(ppdb,line,lineNumber);
+
+        }else if (b::starts_with(line, "HET   ")) {
+
+            parseHETLine(ppdb,line,lineNumber);
 
         }else if (b::starts_with(line, "ATOM  ")) {
 

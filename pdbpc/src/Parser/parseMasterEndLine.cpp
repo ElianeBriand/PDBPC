@@ -18,8 +18,8 @@
  *
  */
 
-#include <pdbpc/Parser/parseMasterEndLine.h>
-#include <pdbpc/Utility/internalUtils.h>
+#include <Parser/parseMasterEndLine.h>
+#include <Utility/internalUtils.h>
 
 namespace pdbpc {
 

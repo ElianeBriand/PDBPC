@@ -22,9 +22,9 @@
 
 
 #include <pdbpc/pdbpc.h>
-#include <pdbpc/Parser/parseMasterEndLine.h>
+#include "../src/Parser/parseMasterEndLine.h"
 #include <pdbpc/Records/OutOfBandRecord.h>
-#include <pdbpc/Utility/internalUtils.h>
+#include "../src/Utility/internalUtils.h"
 
 struct LineFixture_MASTER_END {
     LineFixture_MASTER_END() {

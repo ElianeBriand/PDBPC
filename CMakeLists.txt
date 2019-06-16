@@ -39,7 +39,7 @@ set(PDBPC_SOURCE_LIST
         pdbpc/src/Records/Chain.cpp
         pdbpc/src/Utility/readPDBBlock.cpp
         pdbpc/src/Parser/parseMasterEndLine.cpp
-
+        pdbpc/src/Parser/parseHetRelatedLines.cpp
         )
 
 

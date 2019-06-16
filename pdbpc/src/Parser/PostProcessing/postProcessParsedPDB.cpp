@@ -23,8 +23,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include <pdbpc/Parser/PostProcessing/postProcessParsedPDB.h>
-#include <pdbpc/Utility/internalUtils.h>
+#include <Parser/PostProcessing/postProcessParsedPDB.h>
+#include <Utility/internalUtils.h>
 #include <pdbpc/Records/Chain.h>
 
 namespace pdbpc {

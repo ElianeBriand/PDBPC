@@ -18,14 +18,15 @@
  *
  */
 
-#include <Parser/PostProcessing/pedanticVerifications.h>
+#ifndef PDBPC_PARSEHETRELATEDLINES_H
+#define PDBPC_PARSEHETRELATEDLINES_H
+
+#include "pdbpc/ParsedPDB.h"
 
 namespace pdbpc {
 
-    void doPedanticVerifications(ParsedPDB& ppdb) {
-
-        //TODO: check that models are actually composed of the same residues/atoms/... at differing positions
-
-    }
+    void parseHETLine(ParsedPDB& ppdb, const std::string& originalModelLine, int lineNumber);
 
 }
+
+#endif //PDBPC_PARSEHETRELATEDLINES_H

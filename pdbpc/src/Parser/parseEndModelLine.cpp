@@ -17,11 +17,11 @@
  * along with PDBPC.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#include <pdbpc/Parser/parseEndModelLine.h>
+#include <Parser/parseEndModelLine.h>
 
 
 #include <boost/algorithm/string.hpp>
-#include <pdbpc/Utility/internalUtils.h>
+#include <Utility/internalUtils.h>
 
 namespace b = boost;
 

@@ -19,7 +19,7 @@
  */
 
 
-#include <pdbpc/Parser/parseModelLine.h>
+#include <Parser/parseModelLine.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -27,7 +27,7 @@
 namespace b = boost;
 
 #include <iostream>
-#include <pdbpc/Utility/internalUtils.h>
+#include <Utility/internalUtils.h>
 
 
 namespace pdbpc {
