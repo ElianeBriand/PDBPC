@@ -1,7 +1,9 @@
 PDB Parsing & Conformity in C++ is a complete and easy to use PDB file parser,
  that reports and tries to correct file format errors.
  
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Build Status](https://travis-ci.com/ElianeBriand/PDBPC.svg?branch=master)](https://travis-ci.com/ElianeBriand/PDBPC)
+[![codecov](https://codecov.io/gh/ElianeBriand/PDBPC/branch/master/graph/badge.svg)](https://codecov.io/gh/ElianeBriand/PDBPC)
 
 PDBPC is licenced under the GNU GPL v3 or later version. See GPLv3.txt for the terms of this licence.
 

@@ -23,12 +23,12 @@
 
 namespace pdbpc {
 
-    enum class DuplicateModelRecovery {
+    enum class __attribute__ ((visibility ("default"))) DuplicateModelRecovery  {
         renumberAfterParsingCompletion,
         dropDuplicate
     };
 
-    struct ParserSettings {
+    struct __attribute__ ((visibility ("default"))) ParserSettings {
 
         DuplicateModelRecovery duplicateModelRecovery = DuplicateModelRecovery::dropDuplicate;
 

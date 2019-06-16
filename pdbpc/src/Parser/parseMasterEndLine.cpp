@@ -83,6 +83,7 @@ namespace pdbpc {
         std::string numConectString(it_beg + 60, it_beg + 65);
         std::string numSeqString(it_beg + 66, it_beg + 71);
 
+
         auto numRemark = parseOrRecoverableError<unsigned int>(ppdb, line, lineNumber, numRemarkString,
                                                     OutOfBandSubType::MasterRecordFieldParseError);
         auto mandatedZero = parseOrRecoverableError<unsigned int>(ppdb, line, lineNumber, mandatedZeroString,

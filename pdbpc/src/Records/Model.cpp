@@ -26,6 +26,9 @@
 
 unsigned int pdbpc::Model::lastserialNumber = 0;
 
+// Exclude printRecord from LCOV-based test coverage report
+// LCOV_EXCL_START
+
 void pdbpc::Model::printRecord() {
     std::cout << "" << std::endl;
     std::cout << " * Model #" << this->serialNumber << std::endl;
@@ -42,3 +45,5 @@ void pdbpc::Model::printRecord() {
     std::cout << " *" << std::endl;
     std::cout << "" << std::endl;
 }
+
+// LCOV_EXCL_STOP

@@ -34,7 +34,7 @@ namespace pdbpc {
 
     struct Model;
 
-    struct Chain {
+    struct __attribute__ ((visibility ("default")))  Chain {
         int serialNumber;
 
         std::string chainIdentifier;

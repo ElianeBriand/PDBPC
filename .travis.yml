@@ -9,13 +9,30 @@ addons:
         - sourceline: 'ppa:mhier/libboost-latest'
         - ubuntu-toolchain-r-test
     packages:
-      - g++-8
+      - g++-7
       - boost1.67
+      - lcov
 install:
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
 script:
   - mkdir build
   - cd build
   - cmake ..
   - make
   - make test
+  - cd ..
+after_success:
+  - mkdir build_cov
+  - export GCOV_PREFIX=`pwd`/build_cov/data
+  - echo $GCOV_PREFIX
+  - cd build_cov
+  - export GCOV_PREFIX_STRIP=`pwd | awk -F"/" '{print NF-1}'`
+  - echo $GCOV_PREFIX_STRIP
+  - cmake .. -DCOVERAGE_BUILD=ON -DCMAKE_BUILD_TYPE=Debug
+  - make
+  - ./PDBPC_unittest
+  - cd CMakeFiles
+  - cp --parents `find . -name '*.gcno'` ../data
+  - cd ..
+  - make PDBPC_coverage
+  - bash <(curl -s https://codecov.io/bash) -f PDBPC_coverage.info || echo "Codecov did not collect coverage reports"

@@ -29,7 +29,7 @@ namespace pdbpc {
     struct Chain;
     struct Model;
 
-    struct Atom {
+    struct __attribute__ ((visibility ("default")))  Atom {
 
         int serialNumber;
 

@@ -29,7 +29,7 @@
 #include "Chain.h"
 
 namespace pdbpc {
-    struct Model {
+    struct __attribute__ ((visibility ("default")))  Model {
 
         static unsigned int lastserialNumber;
 
@@ -50,7 +50,7 @@ namespace pdbpc {
 
         void printRecord();
 
-        struct Details {
+        struct __attribute__ ((visibility ("default")))  Details {
             int originalModelNumber = -1;
 
         } details;

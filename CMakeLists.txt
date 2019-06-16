@@ -3,14 +3,42 @@ project(PDBPC VERSION 0.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
+
 set(CMAKE_CXX_STANDARD 17)
 
-SET(CMAKE_CXX_FLAGS "-Wall")
+set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
+
+
+
+option(COVERAGE_BUILD "Create a GCov-enabled build." OFF)
+
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COV_CXX_FLAGS} -Wall  -fvisibility=hidden  ")
+#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${COV_LDFLAGS} ")
+
 SET(CMAKE_CXX_COMPILER "/usr/bin/g++")
-SET(CMAKE_CXX_FLAGS_DEBUG "-g ")
-SET(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
-SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG")
-SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -march=native -g  ")
+#SET(CMAKE_CXX_COMPILER "/usr/lib/llvm/7/bin/clang++")
+
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
+
+if(COVERAGE_BUILD)
+    message("Enabling code coverage ...")
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        include(CodeCoverage)
+        APPEND_COVERAGE_COMPILER_FLAGS()
+        set(COVERAGE_LCOV_EXCLUDES '/usr/*' './test/*')
+        SETUP_TARGET_FOR_COVERAGE_LCOV(
+             NAME ${PROJECT_NAME}_coverage                    # New target name
+             EXECUTABLE PDBPC_unittest # Executable in PROJECT_BINARY_DIR
+             DEPENDENCIES PDBPC_unittest                     # Dependencies to build first
+        )
+    endif()
+endif()
+
+
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ")
+SET(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -Os -DNDEBUG")
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -DNDEBUG")
+SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -march=native -g  ")
 
 #set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_STATIC_LIBS        OFF)
@@ -75,7 +103,7 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 
 
-add_executable(PDBPC_example example.cpp)
+add_executable(PDBPC_example examples/example.cpp)
 set_target_properties(PDBPC_example PROPERTIES LINK_FLAGS " -Wl,--no-undefined -Wl,--as-needed  ")
 target_link_libraries(PDBPC_example pdbpc_static)
 target_link_libraries(PDBPC_example ${Boost_LIBRARIES})
@@ -90,9 +118,9 @@ add_executable(PDBPC_unittest
         pdbpc/test/Line-ATOM_TestSuite.cpp
         pdbpc/test/Line-MODEL_TestSuite.cpp
         pdbpc/test/line-ENDMDL_TestSuite.cpp
-        pdbpc/test/Line-MASTER_END_TestSuite.cpp)
+        pdbpc/test/Line-MASTER_END_TestSuite.cpp pdbpc/test/Line-HET-etAl_TestSuite.cpp)
 
-target_link_libraries(PDBPC_unittest pdbpc_shared)
+target_link_libraries(PDBPC_unittest -Wl,-Bstatic pdbpc_static -Wl,-Bdynamic)
 target_link_libraries(PDBPC_unittest ${Boost_LIBRARIES})
 target_link_libraries(PDBPC_unittest pthread)
 target_include_directories(PDBPC_unittest PRIVATE ./pdbpc/include/)

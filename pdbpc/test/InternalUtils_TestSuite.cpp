@@ -60,6 +60,43 @@ BOOST_AUTO_TEST_SUITE(InternalUtils_testSuite)
 
     }
 
+    BOOST_AUTO_TEST_CASE(inflateShorterLineOrFail_Test,* boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb;
+        std::string line_ref = "MODEL        1   "; // This is 17 char exactly
+
+        // Starting string too short for minimalRow
+        std::string line1 = line_ref; // This is 17 char exactly
+        bool ret1 = inflateShorterLineOrFail(ppdb,line1,12,23,80);
+        BOOST_TEST(!ret1);
+
+        // Starting string just right for minimalRow
+        std::string line2 = line_ref; // This is 17 char exactly
+        bool ret2 = inflateShorterLineOrFail(ppdb,line2,12,17,80);
+        BOOST_TEST(ret2);
+
+        // Starting string longer than minimalRow
+        std::string line3 = line_ref; // This is 17 char exactly
+        bool ret3 = inflateShorterLineOrFail(ppdb,line3,12,13,80);
+        BOOST_TEST(ret3);
+
+        // Starting string longer than minimalRow, and longer than target lenght, should not be modifier
+        std::string line4 = line_ref; // This is 17 char exactly
+        bool ret4 = inflateShorterLineOrFail(ppdb,line4,12,13,15);
+        BOOST_TEST(ret4);
+        BOOST_TEST(line4 == line_ref);
+
+        // Starting string longer than minimalRow, and shorter than target lenght, should be inflated
+        std::string line5 = line_ref; // This is 17 char exactly
+        bool ret5 = inflateShorterLineOrFail(ppdb,line5,12,13,19);
+        BOOST_TEST(ret5);
+        BOOST_TEST(line5 != line_ref);
+        BOOST_TEST(line5.length() == 19);
+        BOOST_TEST(line5 == "MODEL        1     ");
+
+
+
+    }
+
     BOOST_AUTO_TEST_CASE(parseOrError_int_Test,* boost::unit_test::timeout(10)) {
         pdbpc::ParsedPDB ppdb;
         std::string line = "DUMMYLINE        1   ";

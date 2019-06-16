@@ -26,6 +26,8 @@
 
 namespace pdbpc {
 
+    // Exclude printRecord from LCOV-based test coverage report
+    // LCOV_EXCL_START
     void Chain::printRecord() {
         std::cout << "" << std::endl;
         std::cout << " * Chain " << this->serialNumber << std::endl;
@@ -36,4 +38,7 @@ namespace pdbpc {
         std::cout << " *" << std::endl;
         std::cout << "" << std::endl;
     }
+
+    // LCOV_EXCL_STOP
+
 }

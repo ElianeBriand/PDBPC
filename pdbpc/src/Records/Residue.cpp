@@ -262,10 +262,12 @@ namespace pdbpc {
                                                            {"O", -0.5679},
                                                            {"OXT", -0.79810}}}
         };
-    
 
 
 
+
+    // Exclude printRecord from LCOV-based test coverage report
+    // LCOV_EXCL_START
 
     void Residue::printRecord() {
         std::cout << "" << std::endl;
@@ -279,6 +281,9 @@ namespace pdbpc {
         std::cout << " *" << std::endl;
         std::cout << "" << std::endl;
     }
+
+    // LCOV_EXCL_STOP
+
 
     std::string residueTypeToThreeLetterCode(ResidueType t) {
         auto it = std::find_if(residueShorthandSet.begin(), residueShorthandSet.end(),

@@ -28,7 +28,7 @@
 namespace pdbpc {
 
 
-    ParsedPDB readPDBFile(const std::string& filepath, ParserSettings settings = ParserSettings());
+    __attribute__ ((visibility ("default"))) ParsedPDB readPDBFile(const std::string& filepath, ParserSettings settings = ParserSettings());
 
 
 }

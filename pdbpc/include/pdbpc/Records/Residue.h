@@ -28,7 +28,7 @@
 
 namespace pdbpc {
 
-    enum class ResidueType {
+    enum class __attribute__ ((visibility ("default"))) ResidueType {
         alanine,
         arginine,
         asparagine,
@@ -55,19 +55,19 @@ namespace pdbpc {
         unknown
     };
 
-    std::ostream& operator<<(std::ostream & os, const ResidueType & restype);
+    __attribute__ ((visibility ("default"))) std::ostream&  operator<<(std::ostream & os, const ResidueType & restype);
 
-    std::string residueTypeToThreeLetterCode(ResidueType t);
-    std::string residueTypeToFullName(ResidueType t);
-    ResidueType ThreeLetterCodeToResidueType(const std::string &shorthand);
+    __attribute__ ((visibility ("default")))  std::string residueTypeToThreeLetterCode(ResidueType t);
+    __attribute__ ((visibility ("default")))  std::string residueTypeToFullName(ResidueType t);
+    __attribute__ ((visibility ("default")))  ResidueType ThreeLetterCodeToResidueType(const std::string &shorthand);
 
-    extern std::map<ResidueType, std::map<std::string, double> > residueAtomChargeLookupTable;
+    extern std::map<ResidueType, std::map<std::string, double> > __attribute__ ((visibility ("default")))  residueAtomChargeLookupTable;
 
     struct Model;
     struct Chain;
     struct Atom;
 
-    struct Residue {
+    struct __attribute__ ((visibility ("default")))  Residue {
 
         static unsigned int lastserialNumber;
 

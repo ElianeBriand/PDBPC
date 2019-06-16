@@ -133,7 +133,7 @@ namespace pdbpc {
         if(line.length() < minimalNumCol)
             return false;
 
-        line.insert(line.begin(), targetNumColumn - line.length(), ' ');
+        line.insert(line.end(), targetNumColumn - line.length(), ' ');
         return true;
     }
 

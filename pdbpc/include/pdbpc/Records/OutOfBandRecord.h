@@ -25,14 +25,14 @@
 
 namespace pdbpc {
 
-    enum class OutOfBandSeverity  {
+    enum class __attribute__ ((visibility ("default")))  OutOfBandSeverity  {
         error,
         warning,
         idiosyncrasy,
         info
     };
 
-    enum class OutOfBandType  {
+    enum class __attribute__ ((visibility ("default")))  OutOfBandType  {
         FileAccessError,
         UnhandledPDBLine,
         IncorrectPDBLineFormat,
@@ -40,7 +40,7 @@ namespace pdbpc {
         SurprisingStructure // Does not imply incorrect, but should probably be checked
     };
 
-    enum class OutOfBandSubType  {
+    enum class __attribute__ ((visibility ("default")))  OutOfBandSubType  {
         //File access error
         FileNotFound,
         FilePathIsDirectory,
@@ -96,24 +96,24 @@ namespace pdbpc {
 
     };
 
-    enum class RecoveryStatus {
+    enum class __attribute__ ((visibility ("default")))  RecoveryStatus {
         recovered,
         unrecoverable
     };
 
 
-    std::ostream& operator<<(std::ostream & os, const OutOfBandSeverity & severity);
-    std::ostream& operator<<(std::ostream & os, const  OutOfBandType & type);
-    std::ostream& operator<<(std::ostream & os, const OutOfBandSubType & subtype);
-    std::ostream& operator<<(std::ostream & os, const RecoveryStatus & recoveryStatus);
+    __attribute__ ((visibility ("default"))) std::ostream& operator<<(std::ostream & os, const OutOfBandSeverity & severity);
+    __attribute__ ((visibility ("default"))) std::ostream& operator<<(std::ostream & os, const  OutOfBandType & type);
+    __attribute__ ((visibility ("default"))) std::ostream& operator<<(std::ostream & os, const OutOfBandSubType & subtype);
+    __attribute__ ((visibility ("default"))) std::ostream& operator<<(std::ostream & os, const RecoveryStatus & recoveryStatus);
 
-    std::string OutOfBandRecord_SeverityToString(OutOfBandSeverity severity);
-    std::string OutOfBandRecord_TypeToString(OutOfBandType type);
-    std::string OutOfBandRecord_SubTypeToString(OutOfBandSubType subtype);
-    std::string OutOfBandRecord_SubTypeToExplainationString(OutOfBandSubType subtype);
-    std::string OutOfBandRecord_RecoveryStatusToString(RecoveryStatus recoveryStatus);
+    __attribute__ ((visibility ("default"))) std::string OutOfBandRecord_SeverityToString(OutOfBandSeverity severity);
+    __attribute__ ((visibility ("default"))) std::string OutOfBandRecord_TypeToString(OutOfBandType type);
+    __attribute__ ((visibility ("default"))) std::string OutOfBandRecord_SubTypeToString(OutOfBandSubType subtype);
+    __attribute__ ((visibility ("default"))) std::string OutOfBandRecord_SubTypeToExplainationString(OutOfBandSubType subtype);
+    __attribute__ ((visibility ("default"))) std::string OutOfBandRecord_RecoveryStatusToString(RecoveryStatus recoveryStatus);
 
-    struct OutOfBandRecord {
+    struct __attribute__ ((visibility ("default")))  OutOfBandRecord {
 
         static unsigned int lastOoBRecordId;
 

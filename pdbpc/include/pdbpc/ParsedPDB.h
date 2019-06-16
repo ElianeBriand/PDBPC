@@ -30,7 +30,7 @@
 #include "pdbpc/Records/OutOfBandRecord.h"
 
 namespace pdbpc {
-    struct ParsedPDB {
+    struct __attribute__ ((visibility ("default"))) ParsedPDB {
 
         ParsedPDB();
 
@@ -53,7 +53,7 @@ namespace pdbpc {
         bool hasPedanticProblems;
 
 
-        struct Details {
+        struct __attribute__ ((visibility ("default"))) Details {
 
             // END record
             bool endRecordReached = false;
@@ -61,7 +61,7 @@ namespace pdbpc {
             std::string endRecordLine;
             bool continuePastEndRecord = false;
 
-            struct MasterRecord {
+            struct __attribute__ ((visibility ("default"))) MasterRecord {
                 int lineNumber;
                 std::string line;
 
@@ -80,7 +80,6 @@ namespace pdbpc {
             } master;
 
         } details;
-
 
     };
 }

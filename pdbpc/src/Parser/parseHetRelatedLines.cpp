@@ -22,7 +22,10 @@
 
 namespace pdbpc {
 
-    void parseHETLine(ParsedPDB& ppdb, const std::string& originalModelLine, int lineNumber) {
+    void parseHETLine(ParsedPDB& ppdb, const std::string& hetLine, int lineNumber) {
+        std::string line = hetLine;
+
+
 
     }
 

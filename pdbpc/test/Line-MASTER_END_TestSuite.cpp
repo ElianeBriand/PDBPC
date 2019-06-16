@@ -36,8 +36,7 @@ struct LineFixture_MASTER_END {
 
     std::string conformingLine = "MASTER      312    0    1    2   16    0    5    6 1670    2   50   16          ";
     std::string NonConformingLine_short = "MASTER      312    0    1    2   16    0    5    6 1670    2   50   16";
-    std::string NonConformingLine_space = "ENDMDL ";
-    std::string NonConformingLine_junk = "ENDMDLDHJJD";
+    std::string NonConformingLine_junk = "MASTER      312  dhhfk lkkgjjg  1670    2   50   16";
 
     std::shared_ptr<pdbpc::Model> ref_dummyModel;
 };
@@ -58,7 +57,7 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
         BOOST_TEST(ppdb_1.details.master.lineNumber == 12);
         BOOST_TEST(ppdb_1.details.master.line == conformingLine);
 
-        // Currectly set attributes
+        // Correctly set attributes
         BOOST_TEST(ppdb_1.details.master.numRemark == 312);
         BOOST_TEST(ppdb_1.details.master.mandatedZero == 0);
         BOOST_TEST(ppdb_1.details.master.numHet == 1);
@@ -73,12 +72,52 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
         BOOST_TEST(ppdb_1.details.master.numSeq == 16);
     }
 
-    BOOST_FIXTURE_TEST_CASE(MASTER_NonConforming_space, LineFixture_MASTER_END, *boost::unit_test::timeout(10)) {
+    BOOST_FIXTURE_TEST_CASE(MASTER_ShortLine, LineFixture_MASTER_END, *boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb_1;
+        createPlaceholderModelAndChain(ppdb_1);
+        pdbpc::parseMasterLine(ppdb_1,NonConformingLine_short,12);
 
+
+        // This should generate one out of band records
+        BOOST_TEST(ppdb_1.outOfBandRecords.empty());
+
+        // Correctly set line number and line
+        BOOST_TEST(ppdb_1.details.master.lineNumber == 12);
+        BOOST_TEST(ppdb_1.details.master.line == NonConformingLine_short);
+
+        // Correctly set attributes
+        BOOST_TEST(ppdb_1.details.master.numRemark == 312);
+        BOOST_TEST(ppdb_1.details.master.mandatedZero == 0);
+        BOOST_TEST(ppdb_1.details.master.numHet == 1);
+        BOOST_TEST(ppdb_1.details.master.numHelix == 2);
+        BOOST_TEST(ppdb_1.details.master.numSheet == 16);
+        BOOST_TEST(ppdb_1.details.master.numTurn == 0);
+        BOOST_TEST(ppdb_1.details.master.numSite == 5);
+        BOOST_TEST(ppdb_1.details.master.numXform == 6);
+        BOOST_TEST(ppdb_1.details.master.numCoord == 1670);
+        BOOST_TEST(ppdb_1.details.master.numTer == 2);
+        BOOST_TEST(ppdb_1.details.master.numConect == 50);
+        BOOST_TEST(ppdb_1.details.master.numSeq == 16);
     }
 
-    BOOST_FIXTURE_TEST_CASE(MASTER_NonConforming_junk, LineFixture_MASTER_END, *boost::unit_test::timeout(10)) {
 
+    BOOST_FIXTURE_TEST_CASE(MASTER_NonConforming_junk, LineFixture_MASTER_END, *boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb_1;
+        createPlaceholderModelAndChain(ppdb_1);
+        pdbpc::parseMasterLine(ppdb_1,NonConformingLine_junk,15);
+
+
+        // This should generate no out of band records
+        BOOST_TEST(ppdb_1.outOfBandRecords.size() == 1);
+        BOOST_REQUIRE(!ppdb_1.outOfBandRecords.empty());
+
+        BOOST_TEST(ppdb_1.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
+        BOOST_TEST(ppdb_1.outOfBandRecords.back()->subtype ==
+                   pdbpc::OutOfBandSubType::MasterRecordTooShort);
+        BOOST_TEST(ppdb_1.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::error);
+        BOOST_TEST(ppdb_1.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
+        BOOST_TEST(ppdb_1.outOfBandRecords.back()->lineNumber == 15);
+        BOOST_TEST(ppdb_1.outOfBandRecords.back()->line == NonConformingLine_junk);
     }
 
 BOOST_AUTO_TEST_SUITE_END()
