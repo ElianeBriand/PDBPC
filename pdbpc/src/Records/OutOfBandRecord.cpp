@@ -47,6 +47,10 @@ namespace pdbpc {
         std::cout << " |   " << std::endl;
         std::cout << " |         " << this->line << std::endl;
         std::cout << " |   " << std::endl;
+        std::cout << " |   Details : " << std::endl;
+        std::cout << " |   " << std::endl;
+        std::cout << " |         " << this->details << std::endl;
+        std::cout << " |   " << std::endl;
         std::cout << " *" << std::endl;
         std::cout << "" << std::endl;
     }
@@ -73,93 +77,101 @@ namespace pdbpc {
             };
 
     static std::map<OutOfBandSubType, std::tuple<std::string, std::string>> SubTypeToString =
-            {{OutOfBandSubType::FileNotFound, std::tuple<std::string, std::string>(
+            {{OutOfBandSubType::FileNotFound,                                   std::tuple<std::string, std::string>(
                     "FileNotFound", "File not found")},
-             {OutOfBandSubType::FilePathIsDirectory, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::FilePathIsDirectory,                            std::tuple<std::string, std::string>(
                      "FilePathIsDirectory", "Given file path is actually a directory")},
-             {OutOfBandSubType::FileExtensionNotPDB, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::FileExtensionNotPDB,                            std::tuple<std::string, std::string>(
                      "FileExtensionNotPDB", "File extension is not .pdb or .PDB")},
-             {OutOfBandSubType::FileNotARegularFile, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::FileNotARegularFile,                            std::tuple<std::string, std::string>(
                      "FileNotARegularFile", "File is not a regular file (ie is a special system file)")},
-             {OutOfBandSubType::NonRecognizedLinePrefix, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::NonRecognizedLinePrefix,                        std::tuple<std::string, std::string>(
                      "NonRecognizedLinePrefix", "Beginning of line not recognised as valid PDB line")},
-             {OutOfBandSubType::SupernumerarySpaceAfterLastColumn, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::SupernumerarySpaceAfterLastColumn,              std::tuple<std::string, std::string>(
                      "SupernumerarySpaceAfterLastColumn", "Additional blank characters after last column")},
-             {OutOfBandSubType::SupernumeraryContentAfterLastColumn, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::SupernumeraryContentAfterLastColumn,            std::tuple<std::string, std::string>(
                      "SupernumeraryContentAfterLastColumn", "Additional content after last line column (ignored)")},
-             {OutOfBandSubType::NonCompliantColumnWidth, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::NonCompliantColumnWidth,                        std::tuple<std::string, std::string>(
                      "NonCompliantColumnWidth", "Non-compliant column width")},
-             {OutOfBandSubType::unexpectedStringInsteadOfModelNumber, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::unexpectedStringInsteadOfModelNumber,           std::tuple<std::string, std::string>(
                      "unexpectedStringInsteadOfModelNumber",
                      "Unexpected string instead of model number in MODEL record")},
-             {OutOfBandSubType::negativeModelNumber, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::negativeModelNumber,                            std::tuple<std::string, std::string>(
                      "negativeModelNumber", "Model number is negative")},
-             {OutOfBandSubType::zeroModelNumber, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::zeroModelNumber,                                std::tuple<std::string, std::string>(
                      "zeroModelNumber", "Model number is zero")},
-             {OutOfBandSubType::newModelLineWhilePreviousNotClosed, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::newModelLineWhilePreviousNotClosed,             std::tuple<std::string, std::string>(
                      "newModelLineWhilePreviousNotClosed",
                      "A new MODEL line was encountered but the previous model was not closed")},
-             {OutOfBandSubType::duplicateModelNumber, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::duplicateModelNumber,                           std::tuple<std::string, std::string>(
                      "duplicateModelNumber", "Multiple model with the same number were found")},
-             {OutOfBandSubType::EndMdlWithoutOpeningModelStatement, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::EndMdlWithoutOpeningModelStatement,             std::tuple<std::string, std::string>(
                      "EndMdlWithoutOpeningModelStatement", "ENDMDL line without opening MODEl line")},
-             {OutOfBandSubType::AtomDegradedModeParsingEvent, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::EndMdlModelDoubleClose,             std::tuple<std::string, std::string>(
+                     "EndMdlModelDoubleClose", "Two ENDMDL lines without intervening MODEL line")},
+             {OutOfBandSubType::AtomDegradedModeParsingEvent,                   std::tuple<std::string, std::string>(
                      "AtomDegradedModeParsingEvent",
                      "Malformed yet partially recovered ATOM line encountered")},
-             {OutOfBandSubType::AtomIncompleteLine, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomIncompleteLine,                             std::tuple<std::string, std::string>(
                      "AtomIncompleteLine",
                      "Malformed ATOM line too incomplete to parse")},
-             {OutOfBandSubType::AtomCannotParseSerialNumber, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomCannotParseSerialNumber,                    std::tuple<std::string, std::string>(
                      "AtomCannotParseSerialNumber", "ATOM serial number could not be parsed to integer")},
-             {OutOfBandSubType::AtomUnknownResidueThreeLetterCode, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomUnknownResidueThreeLetterCode,              std::tuple<std::string, std::string>(
                      "AtomUnknownResidueThreeLetterCode",
                      "Residue three letter code is unknown, possibly non-standard residue")},
-             {OutOfBandSubType::AtomNameNotKnownInSpecifiedResidue, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomNameNotKnownInSpecifiedResidue,             std::tuple<std::string, std::string>(
                      "AtomNameNotKnownInSpecifiedResidue",
                      "An ATOM not usually found in the current residue was found")},
-             {OutOfBandSubType::AtomChainIDIsNotAlphanumerical, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomChainIDIsNotAlphanumerical,                 std::tuple<std::string, std::string>(
                      "AtomChainIDIsNotAlphanumerical", "ATOM chain identifier should be alphanumerical")},
-             {OutOfBandSubType::AtomCannotParseResidueSeqId, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomCannotParseResidueSeqId,                    std::tuple<std::string, std::string>(
                      "AtomCannotParseResidueSeqId", "ATOM has residue sequence identifier not parsable to integer")},
-             {OutOfBandSubType::AtomResidueInsertionCodeIsNotALetter, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomResidueInsertionCodeIsNotALetter,           std::tuple<std::string, std::string>(
                      "AtomResidueInsertionCodeIsNotALetter", "ATOM residue insertion code should be a letter")},
-             {OutOfBandSubType::AtomCannotParseCoordinates, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomCannotParseCoordinates,                     std::tuple<std::string, std::string>(
                      "AtomCannotParseCoordinates", "ATOM coordinate could not be parsed to float")},
-             {OutOfBandSubType::AtomCannotParseTempFactor, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomCannotParseOccupancy,                      std::tuple<std::string, std::string>(
+                     "AtomCannotParseOccupancy", "Present but unparseable ATOM occupancy factor")},
+             {OutOfBandSubType::AtomCannotParseTempFactor,                      std::tuple<std::string, std::string>(
                      "AtomCannotParseTempFactor", "Present but unparseable ATOM temperature factor")},
-             {OutOfBandSubType::AtomCannotParseCharge, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomCannotParseCharge,                          std::tuple<std::string, std::string>(
                      "AtomCannotParseCharge", "Present but unparseable ATOM charge")},
-             {OutOfBandSubType::AtomNoElementName, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomNoElementName,                              std::tuple<std::string, std::string>(
                      "AtomNoElementName", "ATOM element name is missing")},
-             {OutOfBandSubType::AtomElementNameContainsNonLetter, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomElementNameContainsNonLetter,               std::tuple<std::string, std::string>(
                      "AtomElementNameContainsNonLetter", "ATOM element name contains non-alphabetic characters")},
-             {OutOfBandSubType::AtomAltLocIdContainsNonLetter, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomAltLocIdContainsNonLetter,                  std::tuple<std::string, std::string>(
                      "AtomAltLocIdContainsNonLetter",
                      "ATOM alternate location identifier contains non-alphabetic characters")},
-             {OutOfBandSubType::AtomMissingChainID, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomMissingChainID,                             std::tuple<std::string, std::string>(
                      "AtomMissingChainID", "ATOM has missing chain identifier")},
-             {OutOfBandSubType::ResidueInconsistentInsertionCode, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::ResidueInconsistentInsertionCode,               std::tuple<std::string, std::string>(
                      "ResidueInconsistentInsertionCode",
                      "Residue has same sequence identifier but different insertion code, in the same chain")},
-             {OutOfBandSubType::ResidueInconsistentResidueName, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::ResidueInconsistentResidueName,                 std::tuple<std::string, std::string>(
                      "ResidueInconsistentResidueName",
                      "Residue has same sequence identifier but different residue name, in the same chain")},
              {OutOfBandSubType::ResidueInconsistentInsertionCodeAndResidueName, std::tuple<std::string, std::string>(
                      "ResidueInconsistentInsertionCodeAndResidueName",
                      "Residue has same sequence identifier but different residue name and insertion code, in the same chain")},
-             {OutOfBandSubType::FileContinuePastEndRecord, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::FileContinuePastEndRecord,                      std::tuple<std::string, std::string>(
                      "FileContinuePastEndRecord",
                      "File continue past the END record.")},
-             {OutOfBandSubType::MasterRecordFieldParseError, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::MasterRecordFieldParseError,                    std::tuple<std::string, std::string>(
                      "MasterRecordFieldParseError",
                      "One or several field from the MASTER record were not parsed to unsigned int")},
-             {OutOfBandSubType::MasterRecordCheckIncomplete, std::tuple<std::string, std::string>(
+             {OutOfBandSubType::MasterRecordCheckIncomplete,                    std::tuple<std::string, std::string>(
                      "MasterRecordCheckIncomplete",
                      "Unparsed fields in the MASTER record only allow for partial checking of the file structure")},
              {OutOfBandSubType::MasterRecordTooShort,
-              std::tuple<std::string, std::string>("MasterRecordTooShort", "The MASTER line is too short")},
+                                                                                std::tuple<std::string, std::string>(
+                                                                                        "MasterRecordTooShort",
+                                                                                        "The MASTER line is too short")},
              {OutOfBandSubType::GenericFieldParseError,
-              std::tuple<std::string, std::string>("GenericFieldParseError", "Unspecified error while parsing a field")}
+                                                                                std::tuple<std::string, std::string>(
+                                                                                        "GenericFieldParseError",
+                                                                                        "Unspecified error while parsing a field")}
             };
     static std::map<RecoveryStatus, std::string> RecoveryStatusToString =
             {{RecoveryStatus::recovered,     "Recovered"},

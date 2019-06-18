@@ -21,10 +21,18 @@
 #ifndef PDBPC_SIMPLEPDBFIXTURE_H
 #define PDBPC_SIMPLEPDBFIXTURE_H
 
+// Only for modelNumber < 10, but that's enough for our tests
+inline std::string emitMODELline(int modelNumber) {
+    std::string ret = "MODEL        " + std::to_string(modelNumber) + "\n";
+    return ret;
+}
+
 struct SimplePDBFixture {
 
-    std::string SimplePDBBlock =
-            "MODEL 1\n"
+
+
+
+    std::string Model1_content =
             "ATOM      1  N   PRO A   1      29.071  39.248   5.491  1.00 36.45           N  \n"
             "ATOM      2  CA  PRO A   1      29.983  38.171   5.136  1.00 35.67           C  \n"
             "ATOM      3  C   PRO A   1      29.540  37.373   3.917  1.00 31.34           C  \n"
@@ -83,9 +91,9 @@ struct SimplePDBFixture {
             "ATOM     90 HH11 ARG B   2      22.763  21.433  10.658  1.00  0.00           H  \n"
             "ATOM     91 HH12 ARG B   2      21.314  20.601  11.210  1.00  0.00           H  \n"
             "ATOM     92 HH21 ARG B   2      20.741  18.836   8.224  1.00  0.00           H  \n"
-            "ATOM     93 HH22 ARG B   2      20.266  19.172   9.843  1.00  0.00           H  \n"
-            "ENDMDL\n"
-            "MODEL 2\n"
+            "ATOM     93 HH22 ARG B   2      20.266  19.172   9.843  1.00  0.00           H  \n";
+
+    std::string Model2_content =
             "ATOM      1  N   PRO A   1      29.071  39.248   5.491  1.00 36.45           N  \n"
             "ATOM      2  CA  PRO A   1      29.983  38.171   5.136  1.00 35.67           C  \n"
             "ATOM      3  C   PRO A   1      29.540  37.373   3.917  1.00 31.34           C  \n"
@@ -136,11 +144,9 @@ struct SimplePDBFixture {
             "ATOM     91 HH12 ARG B   2      21.314  20.601  11.210  1.00  0.00           H  \n"
             "ATOM     92 HH21 ARG B   2      20.741  18.836   8.224  1.00  0.00           H  \n"
             "ATOM     93 HH22 ARG B   2      20.266  19.172   9.843  1.00  0.00           H  \n"
-            "ENDMDL\n"
     ;
 
-    std::string DuplicatedModelPDB =
-            "MODEL 2\n"
+    std::string smallATOMBlock =
             "ATOM      1  N   PRO A   1      29.071  39.248   5.491  1.00 36.45           N  \n"
             "ATOM      2  CA  PRO A   1      29.983  38.171   5.136  1.00 35.67           C  \n"
             "ATOM      3  C   PRO A   1      29.540  37.373   3.917  1.00 31.34           C  \n"
@@ -149,9 +155,12 @@ struct SimplePDBFixture {
             "ATOM      6  CG  PRO A   1      28.910  37.672   7.181  1.00 38.30           C  \n"
             "ATOM      7  CD  PRO A   1      28.927  39.170   6.913  1.00 39.93           C  \n"
             "ATOM      8  H2  PRO A   1      29.246  40.197   5.100  1.00  0.00           H  \n"
-            "ATOM      9  H3  PRO A   1      28.124  39.059   5.075  1.00  0.00           H  \n"
-            "ENDMDL\n"
-            "MODEL 2\n"
+            "ATOM      9  H3  PRO A   1      28.124  39.059   5.075  1.00  0.00           H  \n";
+
+    std::string ATOM_residueTypeUnknown  =
+            "ATOM     10  N   ABA B   2      29.262  23.791   3.255  1.00 18.43           N  \n";
+
+    std::string aBitBiggerAtomBlock =
             "ATOM      1  N   PRO A   1      29.071  39.248   5.491  1.00 36.45           N  \n"
             "ATOM      2  CA  PRO A   1      29.983  38.171   5.136  1.00 35.67           C  \n"
             "ATOM      3  C   PRO A   1      29.540  37.373   3.917  1.00 31.34           C  \n"
@@ -173,9 +182,65 @@ struct SimplePDBFixture {
             "ATOM     19  H   GLN A   2      31.340  36.518   3.602  1.00  0.00           H  \n"
             "ATOM     20 HE21 GLN A   2      31.567  36.076  -3.121  1.00  0.00           H  \n"
             "ATOM     21 HE22 GLN A   2      30.232  36.770  -2.292  1.00  0.00           H  \n"
-            "ATOM     65  N   GLN B   1      29.262  23.791   3.255  1.00 18.43           N  \n"
-            "ENDMDL\n"
+            "ATOM     65  N   GLN B   1      29.262  23.791   3.255  1.00 18.43           N  \n";
+
+
+
+
+    std::string SimplePDBBlock = emitMODELline(1) + Model1_content + "ENDMDL\n" + emitMODELline(2) + Model2_content + "ENDMDL\n";
+
+    std::string SimplePDBBlock_noModel1 = Model1_content + emitMODELline(2) + Model2_content + "ENDMDL\n";
+
+    std::string SimplePDBBlock_noModelAtAll = Model1_content;
+
+
+
+
+
+    std::string DuplicatedModelPDB =
+            emitMODELline(2) + smallATOMBlock + "ENDMDL\n" +
+            emitMODELline(2) + aBitBiggerAtomBlock + "ENDMDL\n"
         ;
+
+    std::string IncorrectENDML_NoModelOpen =
+            smallATOMBlock + "ENDMDL\n" +
+            emitMODELline(2) + aBitBiggerAtomBlock + "ENDMDL\n"
+    ;
+
+    std::string IncorrectENDML_ModelDoubleClose1 =
+            emitMODELline(1) + smallATOMBlock + "ENDMDL\n" + "ENDMDL\n" +
+            emitMODELline(2) + aBitBiggerAtomBlock + "ENDMDL\n"
+    ;
+
+    std::string IncorrectENDML_ModelDoubleClose2 =
+            emitMODELline(1) +smallATOMBlock + "ENDMDL\n" +
+            emitMODELline(2) + aBitBiggerAtomBlock + "ENDMDL\n" + "ENDMDL\n"
+    ;
+
+
+    std::string Pedantic_ModelNoSameContent =
+            emitMODELline(1) + smallATOMBlock + "ENDMDL\n" + emitMODELline(2) + Model2_content + "ENDMDL\n";
+
+    std::string WithUnknownResidueName =
+            emitMODELline(1) + smallATOMBlock + ATOM_residueTypeUnknown + "ENDMDL\n";
+
+    std::string incorrectResidueInsertionCode =
+            "ATOM      1  N   PRO A   1      29.071  39.248   5.491  1.00 36.45           N  \n"
+            "ATOM      2  CA  PRO A   1A     29.983  38.171   5.136  1.00 35.67           C  \n"
+            "ATOM      3  C   PRO A   1      29.540  37.373   3.917  1.00 31.34           C  \n";
+
+    std::string incorrectResidueName =
+            "ATOM      1  N   PRO A   1      29.071  39.248   5.491  1.00 36.45           N  \n"
+            "ATOM      2  CA  ALA A   1      29.983  38.171   5.136  1.00 35.67           C  \n"
+            "ATOM      3  C   PRO A   1      29.540  37.373   3.917  1.00 31.34           C  \n";
+
+    std::string incorrectResidueNameAndInsertionCode =
+            "ATOM      1  N   PRO A   1      29.071  39.248   5.491  1.00 36.45           N  \n"
+            "ATOM      2  CA  ALA A   1C     29.983  38.171   5.136  1.00 35.67           C  \n"
+            "ATOM      3  C   PRO A   1      29.540  37.373   3.917  1.00 31.34           C  \n";
+
+    // Our primary clue is the sequence number, so we (intentionally) dont detect mixup where the sequence number is
+    // incorrect but the name and insertion code are fine.
 
 };
 

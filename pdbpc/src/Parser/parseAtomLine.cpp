@@ -32,7 +32,7 @@ namespace b = boost;
 
 namespace pdbpc {
 
-        void parseAtomLine_normalMode(ParsedPDB& ppdb, const std::string& originalAtomLine, int lineNumber);
+        void parseAtomLine_normalMode(ParsedPDB& ppdb, const std::string& originalAtomLine, int lineNumber, const std::string& atomLine);
 
         void parseAtomLine_degradedMode(ParsedPDB& ppdb, const std::string& originalAtomLine, int lineNumber);
 
@@ -106,11 +106,11 @@ namespace pdbpc {
 
         // Dispatching for parse
         if (atomLine.length() == 80) {
-            parseAtomLine_normalMode(ppdb, atomLine, lineNumber);
+            parseAtomLine_normalMode(ppdb, atomLine, lineNumber,atomLine);
         } else if (atomLine.length() >= 78) {
             // We add a blank charge field, then parse as usual
-            atomLine = (atomLine + "  ").substr(0, 79);
-            parseAtomLine_normalMode(ppdb, atomLine, lineNumber);
+            atomLine = (atomLine + "     ").substr(0, 80);
+            parseAtomLine_normalMode(ppdb, originalAtomLine, lineNumber,atomLine);
         } else if (atomLine.length() >= 54) {
 
             // We use degraded mode parsing : information beyond the 54th column (wich is z position) is discarded
@@ -139,7 +139,7 @@ namespace pdbpc {
 
     }
 
-    void parseAtomLine_normalMode(ParsedPDB& ppdb, const std::string& atomLine, int lineNumber) {
+    void parseAtomLine_normalMode(ParsedPDB& ppdb, const std::string& originalLine, int lineNumber, const std::string& atomLine) {
         auto it_beg = atomLine.begin();
 
 
@@ -160,7 +160,7 @@ namespace pdbpc {
 
         auto newAtom = std::make_shared<Atom>();
         newAtom->lineNumber = lineNumber;
-        newAtom->line = atomLine;
+        newAtom->line = originalLine;
 
         bool hasSucceeded = true;
 
@@ -287,21 +287,25 @@ namespace pdbpc {
             ppdb.outOfBandRecords.push_back(rec);
         } else {
             // We have a valid residue type
-            // Checking that the atom belongs to such residue
-            auto knownAtomIt = residueAtomChargeLookupTable[newAtom->residueType].find(newAtom->atomName);
-            if (knownAtomIt == residueAtomChargeLookupTable[newAtom->residueType].end()) {
-                // Atom name unknown for this residue
-                // This may be a misattributed atom
+            // Checking that the atom belongs to such residue if not hydrogen (not in database, TODO: add them)
+            if(newAtom->atomName.at(0) != 'H')
+            {
+                auto knownAtomIt = residueAtomChargeLookupTable[newAtom->residueType].find(newAtom->atomName);
+                if (knownAtomIt == residueAtomChargeLookupTable[newAtom->residueType].end()) {
+                    // Atom name unknown for this residue
+                    // This may be a misattributed atom
 
-                auto rec = std::make_shared<OutOfBandRecord>();
-                rec->severity = OutOfBandSeverity::warning;
-                rec->type = OutOfBandType::SurprisingStructure;
-                rec->subtype = OutOfBandSubType::AtomNameNotKnownInSpecifiedResidue;
-                rec->line = atomLine;
-                rec->lineNumber = lineNumber;
-                rec->recoveryStatus = RecoveryStatus::recovered;
-                ppdb.outOfBandRecords.push_back(rec);
+                    auto rec = std::make_shared<OutOfBandRecord>();
+                    rec->severity = OutOfBandSeverity::warning;
+                    rec->type = OutOfBandType::SurprisingStructure;
+                    rec->subtype = OutOfBandSubType::AtomNameNotKnownInSpecifiedResidue;
+                    rec->line = atomLine;
+                    rec->lineNumber = lineNumber;
+                    rec->recoveryStatus = RecoveryStatus::recovered;
+                    ppdb.outOfBandRecords.push_back(rec);
+                }
             }
+
         }
         return true;
     }
@@ -320,7 +324,7 @@ namespace pdbpc {
             rec->subtype = OutOfBandSubType::AtomMissingChainID;
             rec->line = atomLine;
             rec->lineNumber = lineNumber;
-            rec->recoveryStatus = RecoveryStatus::recovered;
+            rec->recoveryStatus = RecoveryStatus::unrecoverable;
             ppdb.outOfBandRecords.push_back(rec);
             return false;
         }else {
@@ -358,6 +362,7 @@ namespace pdbpc {
                 rec->recoveryStatus = RecoveryStatus::recovered;
                 ppdb.outOfBandRecords.push_back(rec);
             }
+            ppdb.hasAlternateLocation = true;
             newAtom->alternateLocationIdentifier = trimmed_altloc;
         }
 
@@ -400,7 +405,7 @@ namespace pdbpc {
             auto rec = std::make_shared<OutOfBandRecord>();
             rec->severity = OutOfBandSeverity::warning;
             rec->type = OutOfBandType::IncorrectPDBLineFormat;
-            rec->subtype = OutOfBandSubType::AtomChainIDIsNotAlphanumerical;
+            rec->subtype = OutOfBandSubType::AtomResidueInsertionCodeIsNotALetter;
             rec->line = atomLine;
             rec->lineNumber = lineNumber;
             rec->recoveryStatus = RecoveryStatus::recovered;
@@ -469,7 +474,7 @@ namespace pdbpc {
                 auto rec = std::make_shared<OutOfBandRecord>();
                 rec->severity = OutOfBandSeverity::error;
                 rec->type = OutOfBandType::IncorrectPDBLineFormat;
-                rec->subtype = OutOfBandSubType::AtomCannotParseTempFactor;
+                rec->subtype = OutOfBandSubType::AtomCannotParseOccupancy;
                 rec->line = atomLine;
                 rec->lineNumber = lineNumber;
                 rec->recoveryStatus = RecoveryStatus::unrecoverable;
@@ -539,7 +544,7 @@ namespace pdbpc {
                 rec->subtype = OutOfBandSubType::AtomElementNameContainsNonLetter;
                 rec->line = atomLine;
                 rec->lineNumber = lineNumber;
-                rec->recoveryStatus = RecoveryStatus::recovered;
+                rec->recoveryStatus = RecoveryStatus::unrecoverable;
                 ppdb.outOfBandRecords.push_back(rec);
                 return false;
             } else {
@@ -561,7 +566,7 @@ namespace pdbpc {
         } else {
             double charge = -1.0;
             try {
-                charge = b::lexical_cast<double>(trimmed_charge);
+                charge = b::lexical_cast<double>(trimmed_charge.substr(0,1));
             }
             catch (const b::bad_lexical_cast& e) {
                 auto rec = std::make_shared<OutOfBandRecord>();
@@ -569,11 +574,34 @@ namespace pdbpc {
                 rec->type = OutOfBandType::IncorrectPDBLineFormat;
                 rec->subtype = OutOfBandSubType::AtomCannotParseCharge;
                 rec->line = atomLine;
+                rec->details = "Field -> Untrimmed: \"" +  ChargeString +"\" | Trimmed: \"" +  trimmed_charge +"\"";
                 rec->lineNumber = lineNumber;
                 rec->recoveryStatus = RecoveryStatus::unrecoverable;
                 ppdb.outOfBandRecords.push_back(rec);
                 return false;
             }
+
+            if(trimmed_charge.length() == 2) {
+                char plusOrMinus = trimmed_charge.at(1);
+                if(plusOrMinus == '+') {
+                    // Do nothing, already parsed as positive
+                }else if (plusOrMinus == '-') {
+                    charge = -1 * charge;
+                }else {
+                    // That's another character, error out
+                    auto rec = std::make_shared<OutOfBandRecord>();
+                    rec->severity = OutOfBandSeverity::error;
+                    rec->type = OutOfBandType::IncorrectPDBLineFormat;
+                    rec->subtype = OutOfBandSubType::AtomCannotParseCharge;
+                    rec->line = atomLine;
+                    rec->details = "Field -> Untrimmed: \"" +  ChargeString +"\" | Trimmed: \"" +  trimmed_charge +"\"";
+                    rec->lineNumber = lineNumber;
+                    rec->recoveryStatus = RecoveryStatus::unrecoverable;
+                    ppdb.outOfBandRecords.push_back(rec);
+                    return false;
+                }
+            }
+
             newAtom->charge = charge;
         }
         return true;

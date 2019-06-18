@@ -30,7 +30,7 @@ namespace pdbpc {
 
     struct __attribute__ ((visibility ("default"))) ParserSettings {
 
-        DuplicateModelRecovery duplicateModelRecovery = DuplicateModelRecovery::dropDuplicate;
+        DuplicateModelRecovery duplicateModelRecovery = DuplicateModelRecovery::renumberAfterParsingCompletion;
 
         bool doPedanticVerifications = false;
     };

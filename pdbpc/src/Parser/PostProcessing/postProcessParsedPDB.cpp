@@ -30,10 +30,13 @@
 namespace pdbpc {
 
     void modelPostProcessing_handleNoModel(ParsedPDB& ppdb);
+
     void modelPostProcessing_handleDuplicatedModelNumber(ParsedPDB& ppdb);
 
     void populateChains(ParsedPDB& ppdb);
+
     void populateResidues(ParsedPDB& ppdb);
+
     void checkMasterRecord(ParsedPDB& ppdb);
 
     void postProcessParsedPDB(ParsedPDB& ppdb) {
@@ -42,7 +45,7 @@ namespace pdbpc {
         modelPostProcessing_handleDuplicatedModelNumber(ppdb);
         // Handle no model record
         //  --> We legitimize the default model (model num -1) to be our only model
-         modelPostProcessing_handleNoModel(ppdb);
+        modelPostProcessing_handleNoModel(ppdb);
 
         // Generate and populate chains, then residues
         populateChains(ppdb);
@@ -55,17 +58,35 @@ namespace pdbpc {
     void modelPostProcessing_handleDuplicatedModelNumber(ParsedPDB& ppdb) {
         std::vector<int> encounteredModelNumber;
 
-        for(auto& model:  ppdb.models) {
-            auto found_it = std::find(encounteredModelNumber.begin(),encounteredModelNumber.end(),model->modelNumber);
-            if(found_it == encounteredModelNumber.end()) {
+        for (int i = 0; i < ppdb.models.size(); i++) {
+            std::shared_ptr<Model> model = ppdb.models.at(i);
+            auto found_it = std::find(encounteredModelNumber.begin(), encounteredModelNumber.end(), model->modelNumber);
+            if (found_it == encounteredModelNumber.end()) { // We have never seen this modelNumber before
                 encounteredModelNumber.push_back(model->modelNumber);
                 continue;
             }
-            // else we have a duplicated model number : we renumber it.
-            int freeModelNumber = findNextFreeModelNumber(ppdb);
-            model->details.originalModelNumber = model->modelNumber;
-            model->modelNumber = freeModelNumber;
-            encounteredModelNumber.push_back(model->modelNumber);
+            // else we have a duplicated model number
+
+            if (ppdb.settings.duplicateModelRecovery == DuplicateModelRecovery::dropDuplicate) {
+                ppdb.models.erase(std::next(ppdb.models.begin(),i));
+            } else if (ppdb.settings.duplicateModelRecovery == DuplicateModelRecovery::renumberAfterParsingCompletion) {
+                int freeModelNumber = findNextFreeModelNumber(ppdb);
+                model->details.originalModelNumber = model->modelNumber;
+                model->modelNumber = freeModelNumber;
+                encounteredModelNumber.push_back(model->modelNumber);
+
+
+            } // This branch should not be reached. // LCOV_EXCL_START
+            else {
+
+                // This should not be reached.
+                // LCOV_EXCL_START
+                std::cout << "Unexpected parser duplicateModelRecovery setting.\n"
+                             "  integer value=" << static_cast<int>(ppdb.settings.duplicateModelRecovery) <<
+                             "Now terminating. "<< std::endl;
+                std::terminate();
+
+            } // LCOV_EXCL_STOP
         }
 
     }
@@ -73,17 +94,17 @@ namespace pdbpc {
 
     void modelPostProcessing_handleNoModel(ParsedPDB& ppdb) {
 
-        if(ppdb.models.size() > 1) {
+        if (ppdb.models.size() > 1) {
             // We have explicit models
-            if(ppdb.models.at(0)->atoms_flatlist.size() == 0) {
+            if (ppdb.models.at(0)->atoms_flatlist.size() == 0) {
                 // No atoms in the default model : we can just remove it
                 ppdb.models.erase(ppdb.models.begin());
-            }else {
+            } else {
                 // We find a free model num to legitimize the default model
                 int newDefaultModelmodelNum = findNextFreeModelNumber(ppdb);
                 ppdb.models.at(0)->modelNumber = newDefaultModelmodelNum;
             }
-        }else {
+        } else {
             // We only have the implicit default model
             ppdb.models.at(0)->modelNumber = 1;
         }
@@ -91,14 +112,13 @@ namespace pdbpc {
 
     void populateChains(ParsedPDB& ppdb) {
         int lastUsedChainNumber = -1;
-        for(auto& model : ppdb.models) {
+        for (auto& model : ppdb.models) {
             std::set<std::string> foundChainNames;
-            for(auto& atom: model->atoms_flatlist)
-            {
+            for (auto& atom: model->atoms_flatlist) {
                 foundChainNames.insert(atom->chainIdentifier);
             }
 
-            for(const auto& chainName : foundChainNames) {
+            for (const auto& chainName : foundChainNames) {
                 auto chain = std::make_shared<Chain>();
                 chain->serialNumber = ++lastUsedChainNumber;
                 chain->chainIdentifier = chainName;
@@ -108,12 +128,9 @@ namespace pdbpc {
                 int lastEncounteredLineNumber = -1;
                 std::string* lastEncounteredLine = nullptr;
 
-                for(auto& atom: model->atoms_flatlist)
-                {
-                    if(atom->chainIdentifier == chainName)
-                    {
-                        if(firstEncounteredLineNumber == -1)
-                        {
+                for (auto& atom: model->atoms_flatlist) {
+                    if (atom->chainIdentifier == chainName) {
+                        if (firstEncounteredLineNumber == -1) {
                             firstEncounteredLineNumber = atom->lineNumber;
                             firstEncounteredLine = atom->line;
                         }
@@ -144,7 +161,7 @@ namespace pdbpc {
 
     void populateResidues(ParsedPDB& ppdb) {
         for (auto& model : ppdb.models) {
-            for(const auto& chain : model->chains){
+            for (const auto& chain : model->chains) {
                 std::vector<std::shared_ptr<Residue>> foundResidue;
 
                 int lastResidueSeqNum = -1;
@@ -152,8 +169,8 @@ namespace pdbpc {
                 std::string lastResidueInsertionCode = "";
 
                 std::shared_ptr<Atom> lastSeenAtom = nullptr;
-                for(auto& atom: chain->atoms_flatlist) {
-                    if(atom->residueSequenceNumber != lastResidueSeqNum) {
+                for (auto& atom: chain->atoms_flatlist) {
+                    if (atom->residueSequenceNumber != lastResidueSeqNum) {
                         // That's a new residue
                         auto residue = std::make_shared<Residue>();
 
@@ -170,8 +187,7 @@ namespace pdbpc {
                         residue->name = atom->residueName;
                         residue->insertionCode = atom->residueInsertionCode;
 
-                        if(lastSeenAtom != nullptr)
-                        {
+                        if (lastSeenAtom != nullptr) {
                             // This is a new residue, and we have already seen an atom => this is not the first atom/residue
                             // Then we have to assign the closing line of the last residue
                             auto lastResidue = foundResidue.back();
@@ -184,21 +200,20 @@ namespace pdbpc {
                         lastResidueName = residue->name;
                         lastResidueInsertionCode = residue->insertionCode;
 
-                    }else {
+                    } else {
                         // It is alledgedly the same residue
                         // We sanity check that it has the same name and insertion code
 
                         bool residueNameNotMatching = (atom->residueName != lastResidueName);
-                        bool residueInsertionCodeNotMatching =  (atom->residueInsertionCode != lastResidueInsertionCode);
-                        if(residueNameNotMatching || residueInsertionCodeNotMatching)
-                        {
+                        bool residueInsertionCodeNotMatching = (atom->residueInsertionCode != lastResidueInsertionCode);
+                        if (residueNameNotMatching || residueInsertionCodeNotMatching) {
                             auto rec = std::make_shared<OutOfBandRecord>();
                             rec->severity = OutOfBandSeverity::error;
                             rec->type = OutOfBandType::IncorrectPDBFileStructure;
 
-                            if(residueNameNotMatching && residueInsertionCodeNotMatching)
+                            if (residueNameNotMatching && residueInsertionCodeNotMatching)
                                 rec->subtype = OutOfBandSubType::ResidueInconsistentInsertionCodeAndResidueName;
-                            else if(residueInsertionCodeNotMatching)
+                            else if (residueInsertionCodeNotMatching)
                                 rec->subtype = OutOfBandSubType::ResidueInconsistentInsertionCode;
                             else
                                 rec->subtype = OutOfBandSubType::ResidueInconsistentResidueName;
@@ -220,7 +235,7 @@ namespace pdbpc {
                 }
 
                 // Attaching the residues to the chain and model and whole ppdb
-                for(const auto& res: foundResidue) {
+                for (const auto& res: foundResidue) {
                     chain->residues.push_back(res);
                     model->residues_flatlist.push_back(res);
                     ppdb.residues_flatlist.push_back(res);

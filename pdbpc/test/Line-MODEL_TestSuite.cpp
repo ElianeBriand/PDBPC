@@ -28,6 +28,9 @@
 #include <pdbpc/Records/OutOfBandRecord.h>
 #include "../src/Utility/internalUtils.h"
 
+#include "simplePDBFixture.h"
+
+
 struct LineFixture_MODEL {
     LineFixture_MODEL() {
 
@@ -40,6 +43,9 @@ struct LineFixture_MODEL {
     std::string NonConformingLine_space = "MODEL        1   ";
     std::string NonConformingLine_junk = "MODEL        1dsfsg";
     std::string NonConformingLine_shorterField = "MODEL   1";
+    std::string NonConformingLine_notANum = "MODEL  =)";
+    std::string NonConformingLine_negative = "MODEL       -1";
+    std::string NonConformingLine_zero = "MODEL        0";
 };
 
 BOOST_AUTO_TEST_SUITE(Line_testSuite)
@@ -117,5 +123,69 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
         // Closing lines as expected
         BOOST_TEST(ppdb_4.models.back()->closingLineNumber == -1);
     }
+
+    BOOST_FIXTURE_TEST_CASE(MODEL_NonConforming_NotANumber, LineFixture_MODEL, *boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb_4;
+        pdbpc::parseModelLine(ppdb_4, NonConformingLine_notANum, 12);
+
+        // This should generate one out of band record
+        BOOST_REQUIRE(ppdb_4.outOfBandRecords.size() == 1);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::unexpectedStringInsteadOfModelNumber);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::error);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::unrecoverable);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->lineNumber == 12);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->line == NonConformingLine_notANum);
+
+    }
+
+    BOOST_FIXTURE_TEST_CASE(MODEL_NonConforming_NegativeModelNum, LineFixture_MODEL, *boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb_4;
+        pdbpc::parseModelLine(ppdb_4, NonConformingLine_negative, 12);
+
+        // This should generate one out of band record
+        BOOST_REQUIRE(ppdb_4.outOfBandRecords.size() == 1);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::negativeModelNumber);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::error);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::unrecoverable);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->lineNumber == 12);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->line == NonConformingLine_negative);
+
+    }
+
+    BOOST_FIXTURE_TEST_CASE(MODEL_NonConforming_ZeroModelNum, LineFixture_MODEL, *boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb_4;
+        pdbpc::parseModelLine(ppdb_4, NonConformingLine_zero, 12);
+
+        // This should generate one out of band record
+        BOOST_REQUIRE(ppdb_4.outOfBandRecords.size() == 1);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::zeroModelNumber);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::error);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->lineNumber == 12);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->line == NonConformingLine_zero);
+
+    }
+
+    BOOST_FIXTURE_TEST_CASE(MODEL_NonConforming_StartingNewModelWhilePreviousNotClosed, SimplePDBFixture, *boost::unit_test::timeout(10)) {
+
+        std::string SimplePDBBlock_Model1NotClosed = emitMODELline(1) + Model1_content + emitMODELline(2) + Model2_content + "ENDMDL\n";
+
+
+        pdbpc::ParsedPDB ppdb_4 = pdbpc::readPDBBlock(SimplePDBBlock_Model1NotClosed);
+
+
+        // This should generate one out of band record
+        BOOST_REQUIRE(ppdb_4.outOfBandRecords.size() == 1);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBFileStructure);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::newModelLineWhilePreviousNotClosed);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::error);
+        BOOST_TEST(ppdb_4.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
+
+    }
+
+
 
 BOOST_AUTO_TEST_SUITE_END()

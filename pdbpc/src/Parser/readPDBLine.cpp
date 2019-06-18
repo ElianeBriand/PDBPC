@@ -49,7 +49,7 @@ namespace pdbpc {
 
             parseEndModelLine(ppdb,line,lineNumber);
 
-        }else if (b::starts_with(line, "END   ")) {
+        }else if (b::starts_with(line, "END")) {
 
             parseEndLine(ppdb,line,lineNumber);
 

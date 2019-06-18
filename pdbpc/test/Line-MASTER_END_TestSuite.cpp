@@ -26,6 +26,9 @@
 #include <pdbpc/Records/OutOfBandRecord.h>
 #include "../src/Utility/internalUtils.h"
 
+#include "simplePDBFixture.h"
+
+
 struct LineFixture_MASTER_END {
     LineFixture_MASTER_END() {
 
@@ -36,7 +39,8 @@ struct LineFixture_MASTER_END {
 
     std::string conformingLine = "MASTER      312    0    1    2   16    0    5    6 1670    2   50   16          ";
     std::string NonConformingLine_short = "MASTER      312    0    1    2   16    0    5    6 1670    2   50   16";
-    std::string NonConformingLine_junk = "MASTER      312  dhhfk lkkgjjg  1670    2   50   16";
+    std::string NonConformingLine_tooShort = "MASTER      312    0    1    2   16    0    5";
+    std::string NonConformingLine_junk = "MASTER      312    0    1    2   16    0    5    6 1.70    2   50   16          ";
 
     std::shared_ptr<pdbpc::Model> ref_dummyModel;
 };
@@ -108,16 +112,65 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
 
 
         // This should generate no out of band records
-        BOOST_TEST(ppdb_1.outOfBandRecords.size() == 1);
-        BOOST_REQUIRE(!ppdb_1.outOfBandRecords.empty());
+        BOOST_REQUIRE(ppdb_1.outOfBandRecords.size() == 2);
 
-        BOOST_TEST(ppdb_1.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
-        BOOST_TEST(ppdb_1.outOfBandRecords.back()->subtype ==
-                   pdbpc::OutOfBandSubType::MasterRecordTooShort);
-        BOOST_TEST(ppdb_1.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::error);
-        BOOST_TEST(ppdb_1.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
-        BOOST_TEST(ppdb_1.outOfBandRecords.back()->lineNumber == 15);
-        BOOST_TEST(ppdb_1.outOfBandRecords.back()->line == NonConformingLine_junk);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->subtype ==
+                   pdbpc::OutOfBandSubType::MasterRecordFieldParseError);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->severity == pdbpc::OutOfBandSeverity::error);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->recoveryStatus == pdbpc::RecoveryStatus::recovered);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->lineNumber == 15);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->line == NonConformingLine_junk);
+
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(1)->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(1)->subtype ==
+                   pdbpc::OutOfBandSubType::MasterRecordCheckIncomplete);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(1)->severity == pdbpc::OutOfBandSeverity::warning);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(1)->recoveryStatus == pdbpc::RecoveryStatus::recovered);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(1)->lineNumber == 15);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(1)->line == NonConformingLine_junk);
+
     }
+
+    BOOST_FIXTURE_TEST_CASE(MASTER_NonConforming_tooShort, LineFixture_MASTER_END, *boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb_1;
+        createPlaceholderModelAndChain(ppdb_1);
+        pdbpc::parseMasterLine(ppdb_1,NonConformingLine_tooShort,15);
+
+
+        BOOST_TEST(ppdb_1.outOfBandRecords.size() == 1);
+        BOOST_REQUIRE(ppdb_1.outOfBandRecords.size() == 1);
+
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->subtype ==
+                   pdbpc::OutOfBandSubType::MasterRecordTooShort);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->severity == pdbpc::OutOfBandSeverity::error);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->recoveryStatus == pdbpc::RecoveryStatus::recovered);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->lineNumber == 15);
+        BOOST_TEST(ppdb_1.outOfBandRecords.at(0)->line == NonConformingLine_tooShort);
+
+
+    }
+
+
+
+    BOOST_FIXTURE_TEST_CASE(END_Continue_After_End, SimplePDBFixture, *boost::unit_test::timeout(10)) {
+
+        std::string SimplePDBBlock_w_END = emitMODELline(1) + Model1_content + "ENDMDL\n" + "END\n" + emitMODELline(2) + Model2_content + "ENDMDL\n" ;
+
+        pdbpc::ParsedPDB ppdb = pdbpc::readPDBBlock(SimplePDBBlock_w_END);
+
+
+        BOOST_REQUIRE(!ppdb.outOfBandRecords.empty());
+
+
+        BOOST_TEST(ppdb.outOfBandRecords.at(0)->type == pdbpc::OutOfBandType::IncorrectPDBFileStructure);
+        BOOST_TEST(ppdb.outOfBandRecords.at(0)->subtype == pdbpc::OutOfBandSubType::FileContinuePastEndRecord);
+        BOOST_TEST(ppdb.outOfBandRecords.at(0)->severity == pdbpc::OutOfBandSeverity::error);
+        BOOST_TEST(ppdb.outOfBandRecords.at(0)->recoveryStatus == pdbpc::RecoveryStatus::recovered);
+    }
+
+
+
 
 BOOST_AUTO_TEST_SUITE_END()

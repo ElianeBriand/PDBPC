@@ -18,13 +18,22 @@
  *
  */
 
-#include "pdbpc/ParsedPDB.h"
+#include <boost/test/unit_test.hpp>
+
+#include <boost/test/output_test_stream.hpp>
+using b_ostream = boost::test_tools::output_test_stream;
 
 
-namespace pdbpc {
+#include <pdbpc/pdbpc.h>
 
+#include "../src/Parser/PostProcessing/pedanticVerifications.h"
 
-    ParsedPDB::ParsedPDB() {
+BOOST_AUTO_TEST_SUITE(Pedantic_testSuite)
 
+    BOOST_AUTO_TEST_CASE(Pedantic_call_Test) {
+        pdbpc::ParsedPDB ppdb;
+
+        pdbpc::doPedanticVerifications(ppdb);
     }
-}
+
+BOOST_AUTO_TEST_SUITE_END()

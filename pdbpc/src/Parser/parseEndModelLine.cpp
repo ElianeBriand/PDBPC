@@ -19,6 +19,7 @@
  */
 #include <Parser/parseEndModelLine.h>
 
+#include <algorithm>
 
 #include <boost/algorithm/string.hpp>
 #include <Utility/internalUtils.h>
@@ -32,14 +33,20 @@ namespace pdbpc {
 
         // Standard conforming ENDMDL lines must have 6 columns, composing the keyword ENDMDL
 
+
         std::string line = originalEndModelLine;
 
         trimAfterLastColumn(ppdb, line, lineNumber, 6);
 
+        // There should at least be the default model
+        assert(!ppdb.models.empty());
+        auto found_it = std::find_if(std::begin(ppdb.models),
+                                     std::end(ppdb.models),
+                                     [](const std::shared_ptr<Model>& e){ return e->modelNumber != -1;});
 
-        if(ppdb.models.empty()) {
+        if(found_it == ppdb.models.end()) {
             // ENDMDL but no MODEL statement were encountered before
-            // We ignore this ENDMDL, and report the error
+            // (the only model found is the default model with modelNumber == -1)
             auto rec = std::make_shared<OutOfBandRecord>();
             rec->severity = OutOfBandSeverity::error;
             rec->type = OutOfBandType::IncorrectPDBFileStructure;
@@ -58,7 +65,7 @@ namespace pdbpc {
             auto rec = std::make_shared<OutOfBandRecord>();
             rec->severity = OutOfBandSeverity::error;
             rec->type = OutOfBandType::IncorrectPDBFileStructure;
-            rec->subtype = OutOfBandSubType::EndMdlWithoutOpeningModelStatement;
+            rec->subtype = OutOfBandSubType::EndMdlModelDoubleClose;
             rec->line = originalEndModelLine;
             rec->lineNumber = lineNumber;
             rec->recoveryStatus = RecoveryStatus::recovered;

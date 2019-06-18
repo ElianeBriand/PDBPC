@@ -50,7 +50,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(./pdbpc/include/)
 
 set(PDBPC_SOURCE_LIST
-        pdbpc/src/ParsedPDB.cpp
         pdbpc/src/Records/Model.cpp
         pdbpc/src/Utility/readPDBFile.cpp
         pdbpc/src/Utility/internalUtils.cpp
@@ -118,7 +117,12 @@ add_executable(PDBPC_unittest
         pdbpc/test/Line-ATOM_TestSuite.cpp
         pdbpc/test/Line-MODEL_TestSuite.cpp
         pdbpc/test/line-ENDMDL_TestSuite.cpp
-        pdbpc/test/Line-MASTER_END_TestSuite.cpp pdbpc/test/Line-HET-etAl_TestSuite.cpp)
+        pdbpc/test/Line-MASTER_END_TestSuite.cpp
+        pdbpc/test/Line-HET-etAl_TestSuite.cpp
+        pdbpc/test/Records_TestSuite.cpp
+        pdbpc/test/PedanticVerif_TestSuite.cpp
+        pdbpc/test/PostProcess-Residue_TestSuite.cpp
+        pdbpc/test/ParserSettings_TestSuite.cpp)
 
 target_link_libraries(PDBPC_unittest -Wl,-Bstatic pdbpc_static -Wl,-Bdynamic)
 target_link_libraries(PDBPC_unittest ${Boost_LIBRARIES})

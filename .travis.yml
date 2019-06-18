@@ -22,17 +22,5 @@ script:
   - make test
   - cd ..
 after_success:
-  - mkdir build_cov
-  - export GCOV_PREFIX=`pwd`/build_cov/data
-  - cd build_cov
-  - export GCOV_PREFIX_STRIP=`pwd | awk -F"/" '{print NF-1}'`
-  - cmake .. -DCOVERAGE_BUILD=ON -DCMAKE_BUILD_TYPE=Debug
-  - make PDBPC_unittest
-  - ./PDBPC_unittest
-  - cd CMakeFiles
-  - cp --parents `find . -name '*.gcno'` ../data
-  - cd ..
-  - export GCOV_PREFIX=`pwd`
-  - export GCOV_PREFIX_STRIP=`pwd | awk -F"/" '{print NF-1}'`
-  - make PDBPC_coverage
-  - bash <(curl -s https://codecov.io/bash) -f PDBPC_coverage.info || echo "Codecov did not collect coverage reports"
+  - chmod +x ./testCoverage.sh
+  - ./testCoverage.sh -t 1 -s 1

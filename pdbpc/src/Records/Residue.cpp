@@ -322,7 +322,7 @@ namespace pdbpc {
     }
 
     std::ostream& operator<<(std::ostream& os, const ResidueType& restype) {
-        os << residueTypeToFullName(restype) + std::string(" (") + residueTypeToThreeLetterCode(restype) + std::string(") ");
+        os << residueTypeToFullName(restype) + std::string(" (") + residueTypeToThreeLetterCode(restype) + std::string(")");
         return os;
     }
 }

@@ -28,6 +28,9 @@
 #include <pdbpc/Records/OutOfBandRecord.h>
 #include "../src/Utility/internalUtils.h"
 
+#include "simplePDBFixture.h"
+
+
 struct LineFixture_ENDMDL {
     LineFixture_ENDMDL() {
         ref_dummyModel = std::make_shared<pdbpc::Model>();
@@ -116,5 +119,44 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
         BOOST_TEST(ppdb_3.models.back()->openingLineNumber == ref_dummyModel->openingLineNumber);
         BOOST_TEST(ppdb_3.models.back()->openingLine == ref_dummyModel->openingLine);
     }
+
+    BOOST_FIXTURE_TEST_CASE(ENDMDL_ClosingWhileNoModelAreOpened, SimplePDBFixture, *boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb = pdbpc::readPDBBlock(IncorrectENDML_NoModelOpen);
+
+        BOOST_TEST(ppdb.outOfBandRecords.size() == 1);
+        BOOST_REQUIRE(ppdb.outOfBandRecords.size() == 1);
+
+        BOOST_TEST(ppdb.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBFileStructure);
+        BOOST_TEST(ppdb.outOfBandRecords.back()->subtype ==
+                   pdbpc::OutOfBandSubType::EndMdlWithoutOpeningModelStatement);
+
+
+
+    }
+
+    BOOST_FIXTURE_TEST_CASE(ENDMDL_ModelDoubleClose, SimplePDBFixture, *boost::unit_test::timeout(10)) {
+        pdbpc::ParsedPDB ppdb1 = pdbpc::readPDBBlock(IncorrectENDML_ModelDoubleClose1);
+
+
+        BOOST_TEST(ppdb1.outOfBandRecords.size() == 1);
+        BOOST_REQUIRE(ppdb1.outOfBandRecords.size() == 1);
+
+        BOOST_TEST(ppdb1.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBFileStructure);
+        BOOST_TEST(ppdb1.outOfBandRecords.back()->subtype ==
+                   pdbpc::OutOfBandSubType::EndMdlModelDoubleClose);
+
+        pdbpc::ParsedPDB ppdb2 = pdbpc::readPDBBlock(IncorrectENDML_ModelDoubleClose2);
+
+        BOOST_TEST(ppdb2.outOfBandRecords.size() == 1);
+        BOOST_REQUIRE(ppdb2.outOfBandRecords.size() == 1);
+
+        BOOST_TEST(ppdb2.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBFileStructure);
+        BOOST_TEST(ppdb2.outOfBandRecords.back()->subtype ==
+                   pdbpc::OutOfBandSubType::EndMdlModelDoubleClose);
+
+
+    }
+
+
 
 BOOST_AUTO_TEST_SUITE_END()

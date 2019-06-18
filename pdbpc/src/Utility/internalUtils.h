@@ -64,7 +64,8 @@ namespace pdbpc {
             rec->severity = OutOfBandSeverity::error;
             rec->type = OutOfBandType::IncorrectPDBLineFormat;
             rec->subtype = subtypeIfFail;
-            rec->line = line + std::string(" | FIELD=") +  field;
+            rec->line = line;
+            rec->details = "Field : \"" + field + "\"";
             rec->lineNumber = lineNumber;
             rec->recoveryStatus = RecoveryStatus::recovered;
             ppdb.outOfBandRecords.push_back(rec);
@@ -88,7 +89,8 @@ namespace pdbpc {
             rec->severity = OutOfBandSeverity::error;
             rec->type = OutOfBandType::IncorrectPDBLineFormat;
             rec->subtype = subtypeIfFail;
-            rec->line = line + std::string(" | FIELD=") +  field;
+            rec->line = line;
+            rec->details = "Field : \"" + field + "\"";
             rec->lineNumber = lineNumber;
             rec->recoveryStatus = RecoveryStatus::unrecoverable;
             ppdb.outOfBandRecords.push_back(rec);

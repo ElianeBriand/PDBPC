@@ -62,6 +62,7 @@ namespace pdbpc {
         newModelLineWhilePreviousNotClosed,
         duplicateModelNumber,
         EndMdlWithoutOpeningModelStatement,
+        EndMdlModelDoubleClose,
 
         // Atom related errors
         AtomDegradedModeParsingEvent,
@@ -73,6 +74,7 @@ namespace pdbpc {
         AtomCannotParseResidueSeqId,
         AtomResidueInsertionCodeIsNotALetter,
         AtomCannotParseCoordinates,
+        AtomCannotParseOccupancy,
         AtomCannotParseTempFactor,
         AtomCannotParseCharge,
         AtomNoElementName,
@@ -127,6 +129,7 @@ namespace pdbpc {
 
         int lineNumber;
         std::string line;
+        std::string details;
 
         RecoveryStatus recoveryStatus;
 

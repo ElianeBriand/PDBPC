@@ -32,7 +32,6 @@
 namespace pdbpc {
     struct __attribute__ ((visibility ("default"))) ParsedPDB {
 
-        ParsedPDB();
 
         ParserSettings settings;
 
@@ -48,9 +47,11 @@ namespace pdbpc {
         int numberOfParsedLines;
 
 
-        bool hasErrors;
-        bool hasWarnings;
-        bool hasPedanticProblems;
+        bool hasErrors = false;
+        bool hasWarnings = false ;
+        bool hasPedanticProblems = false;
+
+        bool hasAlternateLocation = false;
 
 
         struct __attribute__ ((visibility ("default"))) Details {
@@ -60,6 +61,8 @@ namespace pdbpc {
             int endRecordLineNumber = -1;
             std::string endRecordLine;
             bool continuePastEndRecord = false;
+
+            bool alternateLocationWereRemoved = false;
 
             struct __attribute__ ((visibility ("default"))) MasterRecord {
                 int lineNumber;

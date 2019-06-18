@@ -52,6 +52,7 @@ namespace pdbpc {
                 OutOfBandSubType::unexpectedStringInsteadOfModelNumber );
 
         if (! MaybeModelNum.has_value()) {
+            // Error reported by parseOrUnrecoverableError, just exit
             return;
         }
 

@@ -20,6 +20,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <boost/filesystem.hpp>
+namespace bfs = boost::filesystem;
 
 #include <pdbpc/pdbpc.h>
 #include "../src/Parser/parseEndModelLine.h"
@@ -27,6 +29,8 @@
 #include "../src/Parser/parseAtomLine.h"
 #include <pdbpc/Records/OutOfBandRecord.h>
 #include "../src/Utility/internalUtils.h"
+#include "simplePDBFixture.h"
+
 
 BOOST_AUTO_TEST_SUITE(InternalUtils_testSuite)
 
@@ -147,10 +151,10 @@ BOOST_AUTO_TEST_SUITE(InternalUtils_testSuite)
         std::string floatField1 = " 173 ";
 
         std::optional<double> MaybeFloat1 =  pdbpc::parseOrRecoverableError<double>( ppdb,
-                                                                             line,
-                                                                             12,
-                                                                             floatField1,
-                                                                             pdbpc::OutOfBandSubType::GenericFieldParseError);
+                                                                                     line,
+                                                                                     12,
+                                                                                     floatField1,
+                                                                                     pdbpc::OutOfBandSubType::GenericFieldParseError);
 
         BOOST_TEST(MaybeFloat1.has_value());
         BOOST_TEST(MaybeFloat1.value() == 173.0);
@@ -168,6 +172,95 @@ BOOST_AUTO_TEST_SUITE(InternalUtils_testSuite)
         BOOST_TEST(MaybeFloat2.value() == -173.4);
         BOOST_TEST(ppdb.outOfBandRecords.empty());
 
+
+    }
+
+    BOOST_AUTO_TEST_CASE(parseOrError_RecoverableUnrecoverable_Test,* boost::unit_test::tolerance(0.00001)) {
+        pdbpc::ParsedPDB ppdb1;
+        std::string line = "DUMMYLINE        1   ";
+
+        std::string floatField1 = " 17ehf3 ";
+
+        std::optional<double> MaybeFloat1 =  pdbpc::parseOrRecoverableError<double>( ppdb1,
+                                                                                     line,
+                                                                                     12,
+                                                                                     floatField1,
+                                                                                     pdbpc::OutOfBandSubType::GenericFieldParseError);
+
+        BOOST_TEST(!MaybeFloat1.has_value());
+        BOOST_TEST(!ppdb1.outOfBandRecords.empty());
+        BOOST_REQUIRE(!ppdb1.outOfBandRecords.empty());
+
+        BOOST_TEST(ppdb1.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
+
+        pdbpc::ParsedPDB ppdb2;
+
+        std::optional<double> MaybeFloat2 =  pdbpc::parseOrUnrecoverableError<double>( ppdb2,
+                                                                                     line,
+                                                                                     12,
+                                                                                     floatField1,
+                                                                                     pdbpc::OutOfBandSubType::GenericFieldParseError);
+
+        BOOST_TEST(!MaybeFloat2.has_value());
+        BOOST_TEST(!ppdb2.outOfBandRecords.empty());
+        BOOST_REQUIRE(!ppdb2.outOfBandRecords.empty());
+
+        BOOST_TEST(ppdb2.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::unrecoverable);
+
+
+    }
+
+    BOOST_FIXTURE_TEST_CASE(CheckPDBPath_test,SimplePDBFixture,* boost::unit_test::timeout(10)) {
+
+
+
+        std::string tempFilename = "./TempFile.notpdb";
+        std::string tempDirectoryName = "./TmpDirectory";
+
+        bfs::remove(tempFilename);
+        bfs::remove(tempDirectoryName);
+
+        std::ofstream out(tempFilename);
+        out << SimplePDBBlock;
+        out.close();
+
+        bfs::create_directory(tempDirectoryName);
+
+        std::function<void(void)> cleanUp = [tempFilename,tempDirectoryName]() {
+            bfs::remove(tempFilename);
+            bfs::remove(tempDirectoryName);
+        };
+
+        pdbpc::ParsedPDB ppdb1;
+
+        bool res1 = pdbpc::checkPDBPath(ppdb1,"./NonExistant");
+
+        BOOST_TEST(!ppdb1.outOfBandRecords.empty());
+
+
+        BOOST_TEST(ppdb1.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::FileNotFound);
+
+        pdbpc::ParsedPDB ppdb2;
+
+        bool res2 = pdbpc::checkPDBPath(ppdb2,tempFilename);
+
+        BOOST_TEST(res2);
+
+        BOOST_TEST(!ppdb2.outOfBandRecords.empty());
+
+        BOOST_TEST(ppdb2.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::FileExtensionNotPDB);
+
+        pdbpc::ParsedPDB ppdb3;
+
+        bool res3 = pdbpc::checkPDBPath(ppdb3,tempDirectoryName);
+
+        BOOST_TEST(!res3);
+
+        BOOST_TEST(!ppdb3.outOfBandRecords.empty());
+
+        BOOST_TEST(ppdb3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::FilePathIsDirectory);
+
+        cleanUp();
 
     }
 
