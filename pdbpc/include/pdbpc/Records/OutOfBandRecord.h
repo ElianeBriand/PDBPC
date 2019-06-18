@@ -81,6 +81,7 @@ namespace pdbpc {
         AtomElementNameContainsNonLetter,
         AtomAltLocIdContainsNonLetter,
         AtomMissingChainID,
+        AtomAltLocButNoOccupancy,
 
         //Residue Related error
         ResidueInconsistentInsertionCode,

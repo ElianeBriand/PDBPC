@@ -124,6 +124,8 @@ namespace pdbpc {
         return noEmpty;
     }
 
+    void deleteAtomFromHierarchy(ParsedPDB& ppdb, std::shared_ptr<Atom> atom);
+
 }
 
 

@@ -264,5 +264,26 @@ BOOST_AUTO_TEST_SUITE(InternalUtils_testSuite)
 
     }
 
+    BOOST_FIXTURE_TEST_CASE(Internal_DeleteAtomFromHierarchy,SimplePDBFixture,*boost::unit_test::timeout(10)){
+
+        pdbpc::ParsedPDB ppdb = pdbpc::readPDBBlock(smallATOMBlock);
+
+
+        BOOST_TEST(ppdb.atoms_flatlist.size() == 9);
+        BOOST_TEST(ppdb.models.at(0)->atoms_flatlist.size() == 9);
+        BOOST_REQUIRE(ppdb.atoms_flatlist.size() != 0);
+
+
+        deleteAtomFromHierarchy(ppdb,ppdb.atoms_flatlist.at(0));
+
+
+
+        BOOST_TEST(ppdb.atoms_flatlist.size() == 8);
+        BOOST_TEST(ppdb.models.at(0)->atoms_flatlist.size() == 8);
+        BOOST_TEST(ppdb.models.at(0)->chains.at(0)->atoms_flatlist.size() == 8);
+        BOOST_TEST(ppdb.models.at(0)->chains.at(0)->residues.at(0)->atoms.size() == 8);
+
+    }
+
 
 BOOST_AUTO_TEST_SUITE_END()

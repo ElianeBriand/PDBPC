@@ -157,6 +157,26 @@ struct SimplePDBFixture {
             "ATOM      8  H2  PRO A   1      29.246  40.197   5.100  1.00  0.00           H  \n"
             "ATOM      9  H3  PRO A   1      28.124  39.059   5.075  1.00  0.00           H  \n";
 
+    std::string smallATOMBlock_WithAltLoc =
+            "ATOM      1  N  APRO A   1      29.071  39.248   5.491  0.33 36.45           N  \n"
+            "ATOM      2  CA APRO A   1      29.983  38.171   5.136  0.33 35.67           C  \n"
+            "ATOM      3  C  APRO A   1      29.540  37.373   3.917  0.33 31.34           C  \n"
+            "ATOM      4  O  APRO A   1      28.380  37.476   3.533  0.33 34.24           O  \n"
+            "ATOM      5  CB APRO A   1      30.126  37.270   6.375  0.33 35.64           C  \n"
+            "ATOM      6  CG APRO A   1      28.910  37.672   7.181  0.33 38.30           C  \n"
+            "ATOM      7  CD APRO A   1      28.927  39.170   6.913  0.33 39.93           C  \n"
+            "ATOM      8  H2 APRO A   1      29.246  40.197   5.100  0.33  0.00           H  \n"
+            "ATOM      9  H3 APRO A   1      28.124  39.059   5.075  0.33  0.00           H  \n"
+            "ATOM      1  N  BPRO A   1      29.071  39.248   5.491  0.66 36.25           N  \n"
+            "ATOM      2  CA BPRO A   1      29.983  38.171   5.136  0.66 35.27           C  \n"
+            "ATOM      3  C  BPRO A   1      29.540  37.373   3.917  0.66 31.24           C  \n"
+            "ATOM      4  O  BPRO A   1      28.380  37.476   3.533  0.66 34.24           O  \n"
+            "ATOM      5  CB BPRO A   1      30.126  37.270   6.375  0.66 35.24           C  \n"
+            "ATOM      6  CG BPRO A   1      28.910  37.672   7.181  0.66 38.20           C  \n"
+            "ATOM      7  CD BPRO A   1      28.927  39.170   6.913  0.66 39.23           C  \n"
+            "ATOM      8  H2 BPRO A   1      29.246  40.197   5.100  0.66  0.20           H  \n"
+            "ATOM      9  H3 BPRO A   1      28.124  39.059   5.075  0.66  0.20           H  \n";
+
     std::string ATOM_residueTypeUnknown  =
             "ATOM     10  N   ABA B   2      29.262  23.791   3.255  1.00 18.43           N  \n";
 

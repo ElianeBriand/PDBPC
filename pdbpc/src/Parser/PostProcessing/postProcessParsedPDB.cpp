@@ -39,7 +39,11 @@ namespace pdbpc {
 
     void checkMasterRecord(ParsedPDB& ppdb);
 
+    void handleAltLocation(ParsedPDB& ppdb);
+
     void postProcessParsedPDB(ParsedPDB& ppdb) {
+
+        checkMasterRecord(ppdb);
 
         // TODO: Handle duplicate models
         modelPostProcessing_handleDuplicatedModelNumber(ppdb);
@@ -51,7 +55,8 @@ namespace pdbpc {
         populateChains(ppdb);
         populateResidues(ppdb);
 
-        checkMasterRecord(ppdb);
+
+        handleAltLocation(ppdb);
 
     }
 
@@ -67,9 +72,9 @@ namespace pdbpc {
             }
             // else we have a duplicated model number
 
-            if (ppdb.settings.duplicateModelRecovery == DuplicateModelRecovery::dropDuplicate) {
-                ppdb.models.erase(std::next(ppdb.models.begin(),i));
-            } else if (ppdb.settings.duplicateModelRecovery == DuplicateModelRecovery::renumberAfterParsingCompletion) {
+            if (ppdb.settings.duplicateModelPolicy == DuplicateModelPolicy::dropDuplicate) {
+                ppdb.models.erase(std::next(ppdb.models.begin(), i));
+            } else if (ppdb.settings.duplicateModelPolicy == DuplicateModelPolicy::renumberAfterParsingCompletion) {
                 int freeModelNumber = findNextFreeModelNumber(ppdb);
                 model->details.originalModelNumber = model->modelNumber;
                 model->modelNumber = freeModelNumber;
@@ -80,10 +85,9 @@ namespace pdbpc {
             else {
 
                 // This should not be reached.
-                // LCOV_EXCL_START
-                std::cout << "Unexpected parser duplicateModelRecovery setting.\n"
-                             "  integer value=" << static_cast<int>(ppdb.settings.duplicateModelRecovery) <<
-                             "Now terminating. "<< std::endl;
+                std::cout << "Unexpected parser DuplicateModelPolicy setting.\n"
+                             "  integer value=" << static_cast<int>(ppdb.settings.duplicateModelPolicy) <<
+                          "Now terminating. " << std::endl;
                 std::terminate();
 
             } // LCOV_EXCL_STOP
@@ -229,6 +233,7 @@ namespace pdbpc {
                     assert(!foundResidue.empty());
                     auto currResidue = foundResidue.back();
 
+                    atom->parentResidue = currResidue;
                     currResidue->atoms.push_back(atom);
 
                     lastSeenAtom = atom;
@@ -246,6 +251,78 @@ namespace pdbpc {
 
     void checkMasterRecord(ParsedPDB& ppdb) {
         // TODO: Add actual master record check
+    }
+
+    void handleAltLocation(ParsedPDB& ppdb) {
+
+        if (ppdb.settings.altLocationPolicy == AltLocationPolicy::leaveAsIs) {
+            return;
+        }
+
+        // Find all locus of AltLocations
+
+        for (auto& model : ppdb.models) {
+            // Each model is independant for the purpose of alt locations
+
+            // Map (ChainIdentifier,ResidueSeqNumber,AtomName) --> Atom in a AltLoc group
+            std::map<std::tuple<std::string, int, std::string>, std::vector<std::shared_ptr<Atom>>> altLocationLocusMap;
+
+            for (auto& atom: model->atoms_flatlist) {
+
+                if (atom->alternateLocationIdentifier == "") {
+                    continue;
+                } else {
+                    std::tuple<std::string, int, std::string> key(atom->chainIdentifier, atom->residueSequenceNumber,
+                                                                  atom->atomName);
+                    if (altLocationLocusMap.count(key) == 0) {
+                        // First atom in the group
+                        std::vector<std::shared_ptr<Atom>> value;
+                        value.push_back(atom);
+                        altLocationLocusMap.insert(std::pair(key, value));
+                    } else {
+                        // We insert in the existing vector
+                        altLocationLocusMap.at(key).push_back(atom);
+                    }
+                }
+
+            } // for(auto& atom: model->atoms_flatlist)
+
+            for (auto& pair: altLocationLocusMap) {
+
+                if (ppdb.settings.altLocationPolicy == AltLocationPolicy::firstAppearing) {
+                    for (auto it = pair.second.begin() + 1; it != pair.second.end(); ++it) {
+                        deleteAtomFromHierarchy(ppdb,*it);
+                        ppdb.details.alternateLocationWereRemoved = true;
+
+                    }
+                } else if (ppdb.settings.altLocationPolicy == AltLocationPolicy::highestOccupancy) {
+                    auto it_max = std::max_element(pair.second.begin(),
+                                                   pair.second.end(),
+                                                   [](const std::shared_ptr<Atom>& a_sptr1,const std::shared_ptr<Atom>& a_sptr2) {
+                                                        return a_sptr1->occupancy < a_sptr2->occupancy;
+                                                   });
+                    assert(it_max != pair.second.end());
+                    for (auto & it : pair.second) {
+                        if(it == *it_max)
+                            continue;
+                        deleteAtomFromHierarchy(ppdb,it);
+                        ppdb.details.alternateLocationWereRemoved = true;
+                    }
+                }// This branch should not be reached. // LCOV_EXCL_START
+                else {
+                    std::cout << "Unexpected parser AltLocationPolicy setting.\n"
+                                 "  integer value=" << static_cast<int>(ppdb.settings.duplicateModelPolicy) <<
+                              "Now terminating. " << std::endl;
+                    std::terminate();
+
+                } // LCOV_EXCL_STOP
+            } //for(auto& pair: altLocationLocusMap)
+
+
+        } // for (auto& model : ppdb.models)
+
+
+
     }
 
 }

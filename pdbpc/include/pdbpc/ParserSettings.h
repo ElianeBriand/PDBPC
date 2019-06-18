@@ -23,14 +23,22 @@
 
 namespace pdbpc {
 
-    enum class __attribute__ ((visibility ("default"))) DuplicateModelRecovery  {
+    enum class __attribute__ ((visibility ("default"))) DuplicateModelPolicy  {
         renumberAfterParsingCompletion,
         dropDuplicate
     };
 
+    enum class __attribute__ ((visibility ("default"))) AltLocationPolicy  {
+        firstAppearing,
+        highestOccupancy,
+        leaveAsIs
+    };
+
     struct __attribute__ ((visibility ("default"))) ParserSettings {
 
-        DuplicateModelRecovery duplicateModelRecovery = DuplicateModelRecovery::renumberAfterParsingCompletion;
+        DuplicateModelPolicy duplicateModelPolicy = DuplicateModelPolicy::renumberAfterParsingCompletion;
+
+        AltLocationPolicy altLocationPolicy = AltLocationPolicy::firstAppearing;
 
         bool doPedanticVerifications = false;
     };

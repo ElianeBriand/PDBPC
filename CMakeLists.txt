@@ -122,7 +122,7 @@ add_executable(PDBPC_unittest
         pdbpc/test/Records_TestSuite.cpp
         pdbpc/test/PedanticVerif_TestSuite.cpp
         pdbpc/test/PostProcess-Residue_TestSuite.cpp
-        pdbpc/test/ParserSettings_TestSuite.cpp)
+        pdbpc/test/ParserSettings_TestSuite.cpp pdbpc/test/AltLocationHandling_TestSuite.cpp)
 
 target_link_libraries(PDBPC_unittest -Wl,-Bstatic pdbpc_static -Wl,-Bdynamic)
 target_link_libraries(PDBPC_unittest ${Boost_LIBRARIES})

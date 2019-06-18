@@ -107,7 +107,7 @@ namespace pdbpc {
                      "duplicateModelNumber", "Multiple model with the same number were found")},
              {OutOfBandSubType::EndMdlWithoutOpeningModelStatement,             std::tuple<std::string, std::string>(
                      "EndMdlWithoutOpeningModelStatement", "ENDMDL line without opening MODEl line")},
-             {OutOfBandSubType::EndMdlModelDoubleClose,             std::tuple<std::string, std::string>(
+             {OutOfBandSubType::EndMdlModelDoubleClose,                         std::tuple<std::string, std::string>(
                      "EndMdlModelDoubleClose", "Two ENDMDL lines without intervening MODEL line")},
              {OutOfBandSubType::AtomDegradedModeParsingEvent,                   std::tuple<std::string, std::string>(
                      "AtomDegradedModeParsingEvent",
@@ -131,8 +131,12 @@ namespace pdbpc {
                      "AtomResidueInsertionCodeIsNotALetter", "ATOM residue insertion code should be a letter")},
              {OutOfBandSubType::AtomCannotParseCoordinates,                     std::tuple<std::string, std::string>(
                      "AtomCannotParseCoordinates", "ATOM coordinate could not be parsed to float")},
-             {OutOfBandSubType::AtomCannotParseOccupancy,                      std::tuple<std::string, std::string>(
+             {OutOfBandSubType::AtomCannotParseOccupancy,                       std::tuple<std::string, std::string>(
                      "AtomCannotParseOccupancy", "Present but unparseable ATOM occupancy factor")},
+             {OutOfBandSubType::AtomAltLocButNoOccupancy,                       std::tuple<std::string, std::string>(
+                     "AtomAltLocButNoOccupancy",
+                     "Alternate location indicator were used without occupancy factor. Depending on the AltLocPolicy used,"
+                     " suprising selection location may occur.")},
              {OutOfBandSubType::AtomCannotParseTempFactor,                      std::tuple<std::string, std::string>(
                      "AtomCannotParseTempFactor", "Present but unparseable ATOM temperature factor")},
              {OutOfBandSubType::AtomCannotParseCharge,                          std::tuple<std::string, std::string>(

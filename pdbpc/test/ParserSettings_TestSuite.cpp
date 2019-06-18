@@ -36,14 +36,14 @@ BOOST_AUTO_TEST_SUITE(ParserSettings_testSuite)
     BOOST_FIXTURE_TEST_CASE(DuplicateModelPolicy_Test,SimplePDBFixture,* boost::unit_test::timeout(10)) {
 
         pdbpc::ParserSettings psetting;
-        psetting.duplicateModelRecovery = pdbpc::DuplicateModelRecovery::dropDuplicate;
+        psetting.duplicateModelPolicy = pdbpc::DuplicateModelPolicy::dropDuplicate;
 
         pdbpc::ParsedPDB ppdb1 = pdbpc::readPDBBlock(DuplicatedModelPDB, psetting);
 
         BOOST_TEST(ppdb1.models.size() == 1);
         BOOST_TEST(ppdb1.models.at(0)->modelNumber == 2);
 
-        psetting.duplicateModelRecovery = pdbpc::DuplicateModelRecovery::renumberAfterParsingCompletion;
+        psetting.duplicateModelPolicy = pdbpc::DuplicateModelPolicy::renumberAfterParsingCompletion;
 
         pdbpc::ParsedPDB ppdb2 = pdbpc::readPDBBlock(DuplicatedModelPDB, psetting);
 

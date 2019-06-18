@@ -22,6 +22,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 
 namespace b = boost;
@@ -160,7 +161,34 @@ namespace pdbpc {
         }
     }
 
+    void deleteAtomFromHierarchy(ParsedPDB& ppdb, std::shared_ptr<Atom> atom) {
 
+        std::shared_ptr<Residue> residue = atom->parentResidue.lock();
+        std::shared_ptr<Chain> chain = residue->parentChain.lock();
+        std::shared_ptr<Model> model = chain->parentModel.lock();
+
+        {
+            auto found_it_ppdb = std::find(ppdb.atoms_flatlist.begin(),ppdb.atoms_flatlist.end(),atom);
+            ppdb.atoms_flatlist.erase(found_it_ppdb);
+        }
+
+        {
+            auto found_it_model = std::find(model->atoms_flatlist.begin(),model->atoms_flatlist.end(),atom);
+            model->atoms_flatlist.erase(found_it_model);
+        }
+
+        {
+            auto found_it_chain = std::find(chain->atoms_flatlist.begin(),chain->atoms_flatlist.end(),atom);
+            chain->atoms_flatlist.erase(found_it_chain);
+        }
+
+        {
+            auto found_it_res = std::find(residue->atoms.begin(),residue->atoms.end(),atom);
+            residue->atoms.erase(found_it_res);
+        }
+
+
+    }
 
 
 

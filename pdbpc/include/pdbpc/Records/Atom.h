@@ -61,6 +61,7 @@ namespace pdbpc {
 
         std::weak_ptr<Model> parentModel;
         std::weak_ptr<Chain> parentChain;
+        std::weak_ptr<Residue> parentResidue;
 
         void printRecord();
 
