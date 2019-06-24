@@ -18,36 +18,39 @@
  *
  */
 
-#include "pdbpc/Records/Atom.h"
+
+#include "pdbpc/Records/Heterogen.h"
 
 
 #include <iostream>
 
 namespace pdbpc {
 
+    /*
+        std::string hetID;
+
+        std::string chainID;
+        int sequenceNumber;
+        std::string insertionCode;
+
+        std::string description;
+
+        int numHETATM;*/
+
     // Exclude printRecord from LCOV-based test coverage report
     // LCOV_EXCL_START
-    void Atom::printRecord() {
+    void Heterogen::printRecord() {
         std::cout << "" << std::endl;
-        std::cout << " * Atom " << this->serialNumber << std::endl;
-        std::cout << " |   Chain           : " << this->chainIdentifier << std::endl;
+        std::cout << " * Heterogen " << std::endl;
+        std::cout << " |   HetID           : " << this->hetID << std::endl;
         std::cout << " |   " << std::endl;
-        std::cout << " |   Alt. Loc. ID    : " << this->alternateLocationIdentifier << std::endl;
+        std::cout << " |   Chain           : " << this->chainID << std::endl;
+        std::cout << " |   Sequence Num.   : " << this->sequenceNumber << std::endl;
+        std::cout << " |   Insertion code  : " << this->insertionCode << std::endl;
         std::cout << " |   " << std::endl;
-        std::cout << " |   Residue serial  : " << this->residueSequenceNumber << std::endl;
-        std::cout << " |   Residue code    : " << this->residueName << std::endl;
-        std::cout << " |   Res. ins. code  : " << this->residueInsertionCode << std::endl;
-        std::cout << " |   Residue name    : " << residueTypeToFullName(this->residueType) << std::endl;
+        std::cout << " |   Description  : " << this->description << std::endl;
         std::cout << " |   " << std::endl;
-        std::cout << " |   Atom name       : " << this->atomName << std::endl;
-        std::cout << " |   Element         : " << this->element << std::endl;
-        std::cout << " |   Position x      : " << this->x << std::endl;
-        std::cout << " |   Position y      : " << this->y << std::endl;
-        std::cout << " |   Position z      : " << this->z << std::endl;
-        std::cout << " |   " << std::endl;
-        std::cout << " |   Occupancy       : " << this->occupancy << std::endl;
-        std::cout << " |   Temp. factor    : " << this->temperatureFactor << std::endl;
-        std::cout << " |   Charge          : " << this->charge << std::endl;
+        std::cout << " |   Num HETATM      : " << this->numHETATM << std::endl;
         std::cout << " |   " << std::endl;
         std::cout << " |   Line Number    : " << this->lineNumber << std::endl;
         std::cout << " |   Line : " << std::endl;
@@ -60,5 +63,3 @@ namespace pdbpc {
 
     // LCOV_EXCL_STOP
 }
-
-

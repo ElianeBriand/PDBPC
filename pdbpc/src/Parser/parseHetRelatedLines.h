@@ -21,11 +21,29 @@
 #ifndef PDBPC_PARSEHETRELATEDLINES_H
 #define PDBPC_PARSEHETRELATEDLINES_H
 
+#include <memory>
+
 #include "pdbpc/ParsedPDB.h"
 
 namespace pdbpc {
 
     void parseHETLine(ParsedPDB& ppdb, const std::string& hetLine, int lineNumber);
+    void parseHETNAMLine(ParsedPDB& ppdb, const std::string& hetnamLine, int lineNumber);
+    void parseHETSYNLine(ParsedPDB& ppdb, const std::string& hetsynLine, int lineNumber);
+
+    void parseFORMULLine(ParsedPDB& ppdb, const std::string& formulLine, int lineNumber);
+
+
+    std::shared_ptr<Heterogen> createOrphanedHeterogen(ParsedPDB& ppdb,
+            const std::string& line,
+            int lineNumber,
+            const std::string& hetID);
+
+    std::shared_ptr<Heterogen> findHetOrCreateOrphan(ParsedPDB& ppdb,
+                                                       const std::string& line,
+                                                       int lineNumber,
+                                                       const std::string& hetID);
+
 
 }
 

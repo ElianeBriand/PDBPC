@@ -20,7 +20,6 @@
 
 #include <pdbpc/Records/Model.h>
 
-#include <boost/log/trivial.hpp>
 
 #include <iostream>
 

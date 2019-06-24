@@ -54,6 +54,12 @@ namespace pdbpc {
         SupernumerarySpaceAfterLastColumn,
         SupernumeraryContentAfterLastColumn,
         NonCompliantColumnWidth,
+        MissingChainID,
+        NonAlphabeticChainID,
+        MissingSequenceNumber,
+        NonAlphabeticInsertionCode,
+        NonAlphabeticAltLocId,
+        CannotParseComponentNumber,
 
         // Model related errors
         unexpectedStringInsteadOfModelNumber,
@@ -70,17 +76,13 @@ namespace pdbpc {
         AtomCannotParseSerialNumber,
         AtomUnknownResidueThreeLetterCode,
         AtomNameNotKnownInSpecifiedResidue,
-        AtomChainIDIsNotAlphanumerical,
         AtomCannotParseResidueSeqId,
-        AtomResidueInsertionCodeIsNotALetter,
         AtomCannotParseCoordinates,
         AtomCannotParseOccupancy,
         AtomCannotParseTempFactor,
         AtomCannotParseCharge,
         AtomNoElementName,
         AtomElementNameContainsNonLetter,
-        AtomAltLocIdContainsNonLetter,
-        AtomMissingChainID,
         AtomAltLocButNoOccupancy,
 
         //Residue Related error
@@ -88,6 +90,11 @@ namespace pdbpc {
         ResidueInconsistentResidueName,
         ResidueInconsistentInsertionCodeAndResidueName,
 
+        // HET related records
+        MissingHETATMCountInHETRecord,
+        IncompleteHETrecord,
+        MissingHetID,
+        HetIDReferencedButNotDefined,
 
         // MASTER RECORD error
         MasterRecordFieldParseError,

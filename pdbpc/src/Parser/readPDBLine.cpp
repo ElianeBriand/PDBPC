@@ -57,9 +57,21 @@ namespace pdbpc {
 
             parseMasterLine(ppdb,line,lineNumber);
 
-        }else if (b::starts_with(line, "HET   ")) {
+        }else if (b::starts_with(line, "HET ")) {
 
             parseHETLine(ppdb,line,lineNumber);
+
+        }else if (b::starts_with(line, "HETNAM ")) {
+
+            parseHETNAMLine(ppdb,line,lineNumber);
+
+        }else if (b::starts_with(line, "FORMUL ")) {
+
+            parseFORMULLine(ppdb,line,lineNumber);
+
+        }else if (b::starts_with(line, "HETSYN ")) {
+
+            parseHETSYNLine(ppdb,line,lineNumber);
 
         }else if (b::starts_with(line, "ATOM  ")) {
 

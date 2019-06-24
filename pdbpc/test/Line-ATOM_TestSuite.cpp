@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
 
 
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
-        BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::AtomMissingChainID);
+        BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::MissingChainID);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::error);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::unrecoverable);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->lineNumber == 12);
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
 
 
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
-        BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::AtomChainIDIsNotAlphanumerical);
+        BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::NonAlphabeticChainID);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::warning);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->lineNumber == 12);
@@ -348,7 +348,7 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
 
 
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
-        BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::AtomAltLocIdContainsNonLetter);
+        BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::NonAlphabeticAltLocId);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::warning);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->lineNumber == 12);
@@ -432,7 +432,7 @@ BOOST_AUTO_TEST_SUITE(Line_testSuite)
 
 
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->type == pdbpc::OutOfBandType::IncorrectPDBLineFormat);
-        BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::AtomResidueInsertionCodeIsNotALetter);
+        BOOST_TEST(ppdb_3.outOfBandRecords.back()->subtype == pdbpc::OutOfBandSubType::NonAlphabeticInsertionCode);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->severity == pdbpc::OutOfBandSeverity::warning);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->recoveryStatus == pdbpc::RecoveryStatus::recovered);
         BOOST_TEST(ppdb_3.outOfBandRecords.back()->lineNumber == 12);

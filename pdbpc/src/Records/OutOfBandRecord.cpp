@@ -21,7 +21,6 @@
 
 #include <map>
 
-#include <boost/log/trivial.hpp>
 
 #include <iostream>
 
@@ -123,12 +122,12 @@ namespace pdbpc {
              {OutOfBandSubType::AtomNameNotKnownInSpecifiedResidue,             std::tuple<std::string, std::string>(
                      "AtomNameNotKnownInSpecifiedResidue",
                      "An ATOM not usually found in the current residue was found")},
-             {OutOfBandSubType::AtomChainIDIsNotAlphanumerical,                 std::tuple<std::string, std::string>(
-                     "AtomChainIDIsNotAlphanumerical", "ATOM chain identifier should be alphanumerical")},
+             {OutOfBandSubType::NonAlphabeticChainID,                           std::tuple<std::string, std::string>(
+                     "NonAlphabeticChainID", "Chain identifier should be alphabetic")},
              {OutOfBandSubType::AtomCannotParseResidueSeqId,                    std::tuple<std::string, std::string>(
                      "AtomCannotParseResidueSeqId", "ATOM has residue sequence identifier not parsable to integer")},
-             {OutOfBandSubType::AtomResidueInsertionCodeIsNotALetter,           std::tuple<std::string, std::string>(
-                     "AtomResidueInsertionCodeIsNotALetter", "ATOM residue insertion code should be a letter")},
+             {OutOfBandSubType::NonAlphabeticInsertionCode,                     std::tuple<std::string, std::string>(
+                     "NonAlphabeticInsertionCode", "Insertion code should be a letter")},
              {OutOfBandSubType::AtomCannotParseCoordinates,                     std::tuple<std::string, std::string>(
                      "AtomCannotParseCoordinates", "ATOM coordinate could not be parsed to float")},
              {OutOfBandSubType::AtomCannotParseOccupancy,                       std::tuple<std::string, std::string>(
@@ -145,11 +144,9 @@ namespace pdbpc {
                      "AtomNoElementName", "ATOM element name is missing")},
              {OutOfBandSubType::AtomElementNameContainsNonLetter,               std::tuple<std::string, std::string>(
                      "AtomElementNameContainsNonLetter", "ATOM element name contains non-alphabetic characters")},
-             {OutOfBandSubType::AtomAltLocIdContainsNonLetter,                  std::tuple<std::string, std::string>(
-                     "AtomAltLocIdContainsNonLetter",
-                     "ATOM alternate location identifier contains non-alphabetic characters")},
-             {OutOfBandSubType::AtomMissingChainID,                             std::tuple<std::string, std::string>(
-                     "AtomMissingChainID", "ATOM has missing chain identifier")},
+             {OutOfBandSubType::NonAlphabeticAltLocId,                          std::tuple<std::string, std::string>(
+                     "NonAlphabeticAltLocId",
+                     "Alternate location identifier contains non-alphabetic characters")},
              {OutOfBandSubType::ResidueInconsistentInsertionCode,               std::tuple<std::string, std::string>(
                      "ResidueInconsistentInsertionCode",
                      "Residue has same sequence identifier but different insertion code, in the same chain")},
@@ -175,7 +172,24 @@ namespace pdbpc {
              {OutOfBandSubType::GenericFieldParseError,
                                                                                 std::tuple<std::string, std::string>(
                                                                                         "GenericFieldParseError",
-                                                                                        "Unspecified error while parsing a field")}
+                                                                                        "Unspecified error while parsing a field")},
+             {OutOfBandSubType::MissingChainID,                                 std::tuple<std::string, std::string>(
+                     "MissingChainID", "Expected chain ID but got blank/unreadable field")},
+             {OutOfBandSubType::MissingSequenceNumber,                          std::tuple<std::string, std::string>(
+                     "MissingSequenceNumber", "Expected sequence number, got blank/unreadable field")},
+             {OutOfBandSubType::MissingHETATMCountInHETRecord,                  std::tuple<std::string, std::string>(
+                     "MissingHETATMCountInHETRecord",
+                     "HET record does not include a HETATM count field (or unreadable field)")},
+             {OutOfBandSubType::IncompleteHETrecord,                            std::tuple<std::string, std::string>(
+                     "IncompleteHETrecord", "HET line does not contain all mandatory fields")},
+             {OutOfBandSubType::MissingHetID,                                   std::tuple<std::string, std::string>(
+                     "MissingHetID", "Missing or unreadable HetID field (three-letter code for heterogen) in record")},
+             {OutOfBandSubType::HetIDReferencedButNotDefined,                   std::tuple<std::string, std::string>(
+                     "HetIDReferencedButNotDefined",
+                     "Record is referencing a HetID (three-letter code for heterogens), but no HET line defining it were parsed before")},
+             {OutOfBandSubType::CannotParseComponentNumber,                     std::tuple<std::string, std::string>(
+                     "CannotParseComponentNumber",
+                     "Expected a component number field, but field is empty or unreadable")}
             };
     static std::map<RecoveryStatus, std::string> RecoveryStatusToString =
             {{RecoveryStatus::recovered,     "Recovered"},

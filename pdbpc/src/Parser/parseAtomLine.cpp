@@ -321,18 +321,18 @@ namespace pdbpc {
             auto rec = std::make_shared<OutOfBandRecord>();
             rec->severity = OutOfBandSeverity::error;
             rec->type = OutOfBandType::IncorrectPDBLineFormat;
-            rec->subtype = OutOfBandSubType::AtomMissingChainID;
+            rec->subtype = OutOfBandSubType::MissingChainID;
             rec->line = atomLine;
             rec->lineNumber = lineNumber;
             rec->recoveryStatus = RecoveryStatus::unrecoverable;
             ppdb.outOfBandRecords.push_back(rec);
             return false;
         }else {
-            if (!b::all(ChainIDString, b::is_alnum())) {
+            if (!b::all(ChainIDString, b::is_alpha())) {
                 auto rec = std::make_shared<OutOfBandRecord>();
                 rec->severity = OutOfBandSeverity::warning;
                 rec->type = OutOfBandType::IncorrectPDBLineFormat;
-                rec->subtype = OutOfBandSubType::AtomChainIDIsNotAlphanumerical;
+                rec->subtype = OutOfBandSubType::NonAlphabeticChainID;
                 rec->line = atomLine;
                 rec->lineNumber = lineNumber;
                 rec->recoveryStatus = RecoveryStatus::recovered;
@@ -356,7 +356,7 @@ namespace pdbpc {
                 auto rec = std::make_shared<OutOfBandRecord>();
                 rec->severity = OutOfBandSeverity::warning;
                 rec->type = OutOfBandType::IncorrectPDBLineFormat;
-                rec->subtype = OutOfBandSubType::AtomAltLocIdContainsNonLetter;
+                rec->subtype = OutOfBandSubType::NonAlphabeticAltLocId;
                 rec->line = atomLine;
                 rec->lineNumber = lineNumber;
                 rec->recoveryStatus = RecoveryStatus::recovered;
@@ -405,7 +405,7 @@ namespace pdbpc {
             auto rec = std::make_shared<OutOfBandRecord>();
             rec->severity = OutOfBandSeverity::warning;
             rec->type = OutOfBandType::IncorrectPDBLineFormat;
-            rec->subtype = OutOfBandSubType::AtomResidueInsertionCodeIsNotALetter;
+            rec->subtype = OutOfBandSubType::NonAlphabeticInsertionCode;
             rec->line = atomLine;
             rec->lineNumber = lineNumber;
             rec->recoveryStatus = RecoveryStatus::recovered;

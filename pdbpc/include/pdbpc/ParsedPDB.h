@@ -24,6 +24,7 @@
 #include <vector>
 #include <memory>
 #include <pdbpc/Records/Atom.h>
+#include <pdbpc/Records/Heterogen.h>
 
 #include "ParserSettings.h"
 #include "pdbpc/Records/Model.h"
@@ -40,6 +41,8 @@ namespace pdbpc {
         std::vector<std::shared_ptr<Chain>> chains_flatlist;
         std::vector<std::shared_ptr<Residue>> residues_flatlist;
         std::vector<std::shared_ptr<Atom>> atoms_flatlist;
+
+        std::vector<std::shared_ptr<Heterogen>> heterogens;
 
         std::vector<std::shared_ptr<OutOfBandRecord>> outOfBandRecords;
 
@@ -62,7 +65,9 @@ namespace pdbpc {
             std::string endRecordLine;
             bool continuePastEndRecord = false;
 
-            bool alternateLocationWereRemoved = false;
+            bool alternateLocationWereRemoved = false; ///>  True if a altLocPolicy handler removed ATOM/HETATM records.
+
+            bool hasMisformatedHET = false; ///> At least some HET record were non-conformant. Expect subpar HET data.
 
             struct __attribute__ ((visibility ("default"))) MasterRecord {
                 int lineNumber;

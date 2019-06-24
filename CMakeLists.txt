@@ -25,7 +25,7 @@ if(COVERAGE_BUILD)
     if(CMAKE_COMPILER_IS_GNUCXX)
         include(CodeCoverage)
         APPEND_COVERAGE_COMPILER_FLAGS()
-        set(COVERAGE_LCOV_EXCLUDES '/usr/*' './test/*')
+        set(COVERAGE_LCOV_EXCLUDES '/usr/*' '*/test/*')
         SETUP_TARGET_FOR_COVERAGE_LCOV(
              NAME ${PROJECT_NAME}_coverage                    # New target name
              EXECUTABLE PDBPC_unittest # Executable in PROJECT_BINARY_DIR
@@ -67,7 +67,7 @@ set(PDBPC_SOURCE_LIST
         pdbpc/src/Utility/readPDBBlock.cpp
         pdbpc/src/Parser/parseMasterEndLine.cpp
         pdbpc/src/Parser/parseHetRelatedLines.cpp
-        )
+        pdbpc/src/Records/Heterogen.cpp pdbpc/include/pdbpc/Records/Heterogen.h)
 
 
 

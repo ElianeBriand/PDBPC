@@ -20,7 +20,6 @@
 
 #include "pdbpc/Records/Chain.h"
 
-#include <boost/log/trivial.hpp>
 
 #include <iostream>
 
