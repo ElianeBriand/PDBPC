@@ -25,6 +25,7 @@
 #include "parseAtomLine.h"
 #include "parseMasterEndLine.h"
 #include "parseHetRelatedLines.h"
+#include "parseHeaderLine.h"
 
 
 #include <boost/algorithm/string.hpp>
@@ -76,6 +77,10 @@ namespace pdbpc {
         }else if (b::starts_with(line, "ATOM  ")) {
 
             parseAtomLine(ppdb,line,lineNumber);
+
+        }else if (b::starts_with(line, "HEADER ")) {
+
+            parseHeaderLine(ppdb,line,lineNumber);
 
         }else if (b::starts_with(line, "HETATM ")) {
 

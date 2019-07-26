@@ -61,6 +61,7 @@ if(ppdb.hasErrors) {
         std::cout << "Line " << record->lineNumber << ": " 
         << record->type << " -- " << record->subtype << std::end;
     }
+    return 1;
 }
 
 
@@ -129,7 +130,7 @@ for(const auto& record: ppdb.outOfBandRecords) {
 ```
 
 # Tips
-*  The `ParsedPDB` structure contains mostly array of `std::shared_ptr`, you do not have to fear copies too much.
+*  The `ParsedPDB` structure contains mostly vectors of `std::shared_ptr`, you do not have to fear copies too much.
 
 # Bugs and improvements
 
@@ -140,3 +141,5 @@ you have a non-compliant file that generate no warnings.
 If you find an emitting software with a non-compliant quirk in its PDBs, file a feature 
 request, we are interested in making the parser as robust as possible, even to not-quite-correct
 formatting.
+
+PDB formatting "standard" is here : [https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html](https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html)

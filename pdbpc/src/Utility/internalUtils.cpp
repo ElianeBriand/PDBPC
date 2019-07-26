@@ -154,6 +154,7 @@ namespace pdbpc {
             } else {
                 rec->severity = OutOfBandSeverity::error;
                 rec->subtype = OutOfBandSubType::SupernumeraryContentAfterLastColumn;
+                rec->details = std::string("Trimmed length: ") + std::to_string(trimmed_modelLine.length());
             }
             rec->line = line;
             rec->lineNumber = lineNumber;

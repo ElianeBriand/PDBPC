@@ -44,7 +44,7 @@ SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -march
 set(Boost_USE_STATIC_LIBS        OFF)
 
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED COMPONENTS filesystem unit_test_framework)
+find_package(Boost REQUIRED COMPONENTS filesystem unit_test_framework date_time)
 include_directories(${Boost_INCLUDE_DIRS})
 
 include_directories(./pdbpc/include/)
@@ -67,7 +67,7 @@ set(PDBPC_SOURCE_LIST
         pdbpc/src/Utility/readPDBBlock.cpp
         pdbpc/src/Parser/parseMasterEndLine.cpp
         pdbpc/src/Parser/parseHetRelatedLines.cpp
-        pdbpc/src/Records/Heterogen.cpp pdbpc/include/pdbpc/Records/Heterogen.h)
+        pdbpc/src/Records/Heterogen.cpp pdbpc/include/pdbpc/Records/Heterogen.h pdbpc/src/Parser/parseHeaderLine.cpp pdbpc/src/Parser/parseHeaderLine.h)
 
 
 
@@ -122,7 +122,7 @@ add_executable(PDBPC_unittest
         pdbpc/test/Records_TestSuite.cpp
         pdbpc/test/PedanticVerif_TestSuite.cpp
         pdbpc/test/PostProcess-Residue_TestSuite.cpp
-        pdbpc/test/ParserSettings_TestSuite.cpp pdbpc/test/AltLocationHandling_TestSuite.cpp)
+        pdbpc/test/ParserSettings_TestSuite.cpp pdbpc/test/AltLocationHandling_TestSuite.cpp pdbpc/test/Line-HEADER_TestSuite.cpp)
 
 target_link_libraries(PDBPC_unittest -Wl,-Bstatic pdbpc_static -Wl,-Bdynamic)
 target_link_libraries(PDBPC_unittest ${Boost_LIBRARIES})

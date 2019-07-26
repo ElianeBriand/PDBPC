@@ -60,6 +60,7 @@ namespace pdbpc {
         NonAlphabeticInsertionCode,
         NonAlphabeticAltLocId,
         CannotParseComponentNumber,
+        DateCannotBeParsed,
 
         // Model related errors
         unexpectedStringInsteadOfModelNumber,
@@ -100,6 +101,9 @@ namespace pdbpc {
         MasterRecordFieldParseError,
         MasterRecordCheckIncomplete,
         MasterRecordTooShort,
+
+        // HEADER record error
+        HeaderRecordTooShort,
 
         // END record error
         FileContinuePastEndRecord

@@ -165,14 +165,12 @@ namespace pdbpc {
              {OutOfBandSubType::MasterRecordCheckIncomplete,                    std::tuple<std::string, std::string>(
                      "MasterRecordCheckIncomplete",
                      "Unparsed fields in the MASTER record only allow for partial checking of the file structure")},
-             {OutOfBandSubType::MasterRecordTooShort,
-                                                                                std::tuple<std::string, std::string>(
-                                                                                        "MasterRecordTooShort",
-                                                                                        "The MASTER line is too short")},
-             {OutOfBandSubType::GenericFieldParseError,
-                                                                                std::tuple<std::string, std::string>(
-                                                                                        "GenericFieldParseError",
-                                                                                        "Unspecified error while parsing a field")},
+             {OutOfBandSubType::MasterRecordTooShort,                           std::tuple<std::string, std::string>(
+                     "MasterRecordTooShort",
+                     "The MASTER line is too short")},
+             {OutOfBandSubType::GenericFieldParseError,                         std::tuple<std::string, std::string>(
+                     "GenericFieldParseError",
+                     "Unspecified error while parsing a field")},
              {OutOfBandSubType::MissingChainID,                                 std::tuple<std::string, std::string>(
                      "MissingChainID", "Expected chain ID but got blank/unreadable field")},
              {OutOfBandSubType::MissingSequenceNumber,                          std::tuple<std::string, std::string>(
@@ -189,7 +187,10 @@ namespace pdbpc {
                      "Record is referencing a HetID (three-letter code for heterogens), but no HET line defining it were parsed before")},
              {OutOfBandSubType::CannotParseComponentNumber,                     std::tuple<std::string, std::string>(
                      "CannotParseComponentNumber",
-                     "Expected a component number field, but field is empty or unreadable")}
+                     "Expected a component number field, but field is empty or unreadable")},
+             {OutOfBandSubType::HeaderRecordTooShort,                           std::tuple<std::string, std::string>(
+                     "HeaderRecordTooShort", "Optional HEADER line present but too short")},
+             {OutOfBandSubType::DateCannotBeParsed, std::tuple<std::string, std::string>("DateCannotBeParsed","Date cannot be parsed")}
             };
     static std::map<RecoveryStatus, std::string> RecoveryStatusToString =
             {{RecoveryStatus::recovered,     "Recovered"},

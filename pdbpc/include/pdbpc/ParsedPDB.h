@@ -23,6 +23,10 @@
 
 #include <vector>
 #include <memory>
+
+#include <boost/date_time.hpp>
+
+
 #include <pdbpc/Records/Atom.h>
 #include <pdbpc/Records/Heterogen.h>
 
@@ -58,6 +62,13 @@ namespace pdbpc {
 
 
         struct __attribute__ ((visibility ("default"))) Details {
+
+            std::string headerLine;
+            int headerLineNumber;
+            boost::gregorian::date depositionDate;
+            std::string PDBCode;
+            std::string classification;
+
 
             // END record
             bool endRecordReached = false;
